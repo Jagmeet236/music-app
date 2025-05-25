@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
+import 'package:client/auth/model/user_model.dart';
 import 'package:client/auth/repositories/auth_remote_repository.dart';
 import 'package:client/core/constants/strings.dart';
-import 'package:client/core/exceptions/api_exceptions.dart';
+import 'package:client/core/error/api_error_type.dart';
+import 'package:client/core/error/failure.dart';
 
 import 'package:client/core/utils/typedef.dart';
 import 'package:flutter/material.dart';
@@ -33,13 +34,14 @@ class AuthRemoteRepositoryImpl implements AuthRemoteRepository {
       } else {
         // Cast decoded response to [DataMap] for better type safety
         final decoded = jsonDecode(response.body) as DataMap;
-        throw ApiException.fromStatusCode(
-          response.statusCode,
-          decoded['message']?.toString() ?? 'Unknown error',
+        throw Exception(
+          decoded['message']?.toString() ??
+              decoded['detail']?.toString() ??
+              'Unknown error',
         );
       }
     } catch (error) {
-      throw ApiException.fromError(error);
+      throw Exception('Login failed: $error');
     }
   }
 
@@ -48,7 +50,7 @@ class AuthRemoteRepositoryImpl implements AuthRemoteRepository {
   /// Returns a [ResultFuture] that contains either a [DataMap]
   /// on success or an error [String].
   @override
-  ResultFuture<DataMap> signUp({
+  ResultFuture<UserModel> signUp({
     required String name,
     required String email,
     required String password,
@@ -60,35 +62,26 @@ class AuthRemoteRepositoryImpl implements AuthRemoteRepository {
         body: json.encode({'name': name, 'email': email, 'password': password}),
       );
 
-      // Decode JSON explicitly as DataMap for better type safety
       final decoded = jsonDecode(response.body) as DataMap;
 
       if (response.statusCode == 201) {
-        // Success case: return Right with user data
-        return Right(decoded);
+        return Right(UserModel.fromJson(decoded));
       } else {
-        // Error case: get error message safely and return Left with message
         final errorMessage =
             decoded['message']?.toString() ??
             decoded['detail']?.toString() ??
             'Unknown error';
-        log(response.body);
-        log(response.statusCode.toString());
-        return Left(
-          ApiException.fromStatusCode(
-            response.statusCode,
-            errorMessage,
-          ).message,
-        );
+
+        return Left(AppFailure(errorMessage));
       }
     } on http.ClientException {
-      return Left(ApiErrorType.network.message);
+      return Left(AppFailure(ApiErrorType.network.message));
     } on FormatException {
-      return Left(ApiErrorType.badRequest.message);
+      return Left(AppFailure(ApiErrorType.badRequest.message));
     } on TimeoutException {
-      return Left(ApiErrorType.timeout.message);
-    } on Exception catch (error) {
-      return Left(ApiException.fromError(error).message);
+      return Left(AppFailure(ApiErrorType.timeout.message));
+    } on Exception catch (e) {
+      return Left(AppFailure('Unexpected error: $e'));
     }
   }
 }
