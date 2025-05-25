@@ -17,7 +17,10 @@ import 'package:http/http.dart' as http;
 class AuthRemoteRepositoryImpl implements AuthRemoteRepository {
   /// Logs in the user with the provided [email] and [password].
   @override
-  Future<void> login({required String email, required String password}) async {
+  ResultFuture<UserModel> login({
+    required String email,
+    required String password,
+  }) async {
     try {
       final response = await http.post(
         Uri.parse('$kBaseURL/auth/login'),
@@ -28,20 +31,29 @@ class AuthRemoteRepositoryImpl implements AuthRemoteRepository {
       debugPrint('Response status: ${response.statusCode}');
       debugPrint('Response body: ${response.body}');
 
+      // Cast decoded response to [DataMap] for better type safety
+      final decoded = jsonDecode(response.body) as DataMap;
       if (response.statusCode == 200) {
         debugPrint('User logged in successfully');
-        // You can parse user data here if needed
+
+        /// If the response is successful, parse the user data
+        return Right(UserModel.fromJson(decoded));
       } else {
-        // Cast decoded response to [DataMap] for better type safety
-        final decoded = jsonDecode(response.body) as DataMap;
-        throw Exception(
-          decoded['message']?.toString() ??
-              decoded['detail']?.toString() ??
-              'Unknown error',
-        );
+        final errorMessage =
+            decoded['message']?.toString() ??
+            decoded['detail']?.toString() ??
+            'Unknown error';
+
+        return Left(AppFailure(errorMessage));
       }
-    } catch (error) {
-      throw Exception('Login failed: $error');
+    } on http.ClientException {
+      return Left(AppFailure(ApiErrorType.network.message));
+    } on FormatException {
+      return Left(AppFailure(ApiErrorType.badRequest.message));
+    } on TimeoutException {
+      return Left(AppFailure(ApiErrorType.timeout.message));
+    } on Exception catch (e) {
+      return Left(AppFailure('Unexpected error: $e'));
     }
   }
 
