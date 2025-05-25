@@ -1,0 +1,33 @@
+# Ignore Python cache and compiled files
+__pycache__/
+*.pyc
+
+# Ignore environment files (both root and any subfolder)
+.env
+*.env
+
+# Ignore IDE/editor config files
+.vscode/
+.idea/
+
+# Ignore Dart/Flutter build and tool files (inside client/)
+client/build/
+client/.dart_tool/
+client/.packages
+client/.flutter-plugins
+client/.flutter-plugins-dependencies
+client/pubspec.lock
+
+# Ignore FastAPI cache and environment files
+server/__pycache__/
+server/*.env
+
+# Ignore notes folder completely, including specific files and caches
+notes/
+notes/__pycache__/
+notes/*101.py
+notes/*my_notes.ipynb
+notes/*.ipynb
+
+# Ignore macOS system files
+.DS_Store
