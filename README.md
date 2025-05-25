@@ -14,7 +14,7 @@ music_app/
 │   └── ...
 │
 ├── server/        # FastAPI backend (REST APIs)
-│   ├── app/
+│   ├── main
 │   └── ...
 │
 ├── README.md      # Project overview
