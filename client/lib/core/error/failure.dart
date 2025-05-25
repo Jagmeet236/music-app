@@ -2,15 +2,13 @@
 ///
 /// This class is used to encapsulate error messages and provide
 /// a consistent way to handle failures throughout the application.
-class Failure {
-  /// Creates a [Failure] instance with the provided error [message].
-  const Failure(this.message);
+class AppFailure {
+  /// Creates a [AppFailure] instance with the provided error [message].
+  const AppFailure([this.message = 'An unexpected error occurred.']);
 
   /// The error message describing the failure.
   final String message;
 
   @override
-  String toString() {
-    return 'Failure: $message';
-  }
+  String toString() => 'AppFailure(message: $message)';
 }
