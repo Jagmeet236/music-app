@@ -1,3 +1,4 @@
+import 'package:client/auth/model/user_model.dart';
 import 'package:client/core/utils/typedef.dart';
 
 /// Defines the contract for remote authentication operations.
@@ -10,7 +11,7 @@ abstract class AuthRemoteRepository {
   /// Signs up a new user with the given [email] and [password].
   ///
   /// Throws an exception if the registration fails.
-  ResultFuture<DataMap> signUp({
+  ResultFuture<UserModel> signUp({
     required String name,
     required String email,
     required String password,
