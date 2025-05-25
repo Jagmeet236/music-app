@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:client/auth/repositories/auth_remote_repository_impl.dart';
 import 'package:client/auth/view/pages/signup_page.dart';
 import 'package:client/auth/view/widgets/auth_gradient_btn.dart';
@@ -7,6 +9,7 @@ import 'package:client/core/extensions/app_context.dart';
 import 'package:client/core/theme/app_palette.dart';
 import 'package:client/core/widgets/custom_text_btn.dart';
 import 'package:flutter/material.dart';
+import 'package:fpdart/fpdart.dart' show Left, Right;
 
 /// This widget is part of the authentication module and is responsible for
 /// rendering the sign-in page of the application.
@@ -60,12 +63,17 @@ class _SigninPageState extends State<SigninPage> {
                 ),
                 sizedBox,
                 AuthGradientBtn(
-                  onTap: () {
+                  onTap: () async {
                     if (formKey.currentState?.validate() ?? false) {
-                      AuthRemoteRepositoryImpl().login(
+                      final res = await AuthRemoteRepositoryImpl().login(
                         email: emailController.text,
                         password: passwordController.text,
                       );
+                      final val = switch (res) {
+                        Left(value: final l) => l,
+                        Right(value: final r) => r.toString(),
+                      };
+                      log('Login response: $val');
                     }
                   },
                   buttonText: textSignIn,

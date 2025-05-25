@@ -6,7 +6,10 @@ abstract class AuthRemoteRepository {
   /// Logs in the user using the provided [email] and [password].
   ///
   /// Throws an exception if authentication fails.
-  Future<void> login({required String email, required String password});
+  ResultFuture<UserModel> login({
+    required String email,
+    required String password,
+  });
 
   /// Signs up a new user with the given [email] and [password].
   ///
