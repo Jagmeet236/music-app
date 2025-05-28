@@ -1,3 +1,4 @@
+import os
 import uuid
 import bcrypt
 from fastapi import HTTPException, Depends
@@ -6,9 +7,16 @@ from models.user import User
 from pydantic_schemas.user_create import UserCreate
 from fastapi import APIRouter
 from sqlalchemy.orm import Session
+from dotenv import load_dotenv
+import jwt;
 
 from pydantic_schemas.user_login import UserLogin
 router = APIRouter()
+load_dotenv()
+
+secret_key = os.getenv("SECRET_KEY")
+if not secret_key:
+    raise ValueError("SECRET_KEY environment variable is not set.")
 
 
 @router.post('/signup', status_code = 201)
@@ -39,5 +47,7 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
     is_match = bcrypt.checkpw(user.password.encode(), user_db.password)
     if not is_match:
         raise HTTPException(status_code=400, detail='Incorrect password!')
+    # Generate JWT token
+    token = jwt.encode({"user_id": user_db.id}, secret_key)
     
-    return user_db
+    return {"token": token, "user": user_db}
