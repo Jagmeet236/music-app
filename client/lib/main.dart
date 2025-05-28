@@ -1,10 +1,11 @@
 import 'package:client/auth/view/pages/signup_page.dart';
 import 'package:client/core/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MusicApp());
+  runApp(const ProviderScope(child: MusicApp()));
 }
 
 /// Staring point root  widget
