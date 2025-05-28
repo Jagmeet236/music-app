@@ -3,14 +3,22 @@ import 'dart:convert';
 
 import 'package:client/auth/model/user_model.dart';
 import 'package:client/auth/repositories/auth_remote_repository.dart';
-import 'package:client/core/constants/strings.dart';
+import 'package:client/core/constants/server_constant.dart';
 import 'package:client/core/error/api_error_type.dart';
 import 'package:client/core/error/failure.dart';
-
 import 'package:client/core/utils/typedef.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'auth_remote_repository_impl.g.dart';
+
+/// Provides an instance of [AuthRemoteRepositoryImpl] for remote
+@riverpod
+AuthRemoteRepositoryImpl authRemoteRepositoryImpl(Ref ref) {
+  return AuthRemoteRepositoryImpl();
+}
 
 /// Concrete implementation of [AuthRemoteRepository] that handles
 /// authentication logic by communicating with a remote server.
@@ -23,7 +31,7 @@ class AuthRemoteRepositoryImpl implements AuthRemoteRepository {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$kBaseURL/auth/login'),
+        Uri.parse('${ServerConstant.serverUrl}/auth/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'email': email, 'password': password}),
       );
@@ -69,7 +77,7 @@ class AuthRemoteRepositoryImpl implements AuthRemoteRepository {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$kBaseURL/auth/signup'),
+        Uri.parse('${ServerConstant.serverUrl}/auth/signup'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'name': name, 'email': email, 'password': password}),
       );

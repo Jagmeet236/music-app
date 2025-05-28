@@ -1,26 +1,26 @@
-import 'dart:developer';
-
-import 'package:client/auth/repositories/auth_remote_repository_impl.dart';
 import 'package:client/auth/view/pages/signup_page.dart';
 import 'package:client/auth/view/widgets/auth_gradient_btn.dart';
 import 'package:client/auth/view/widgets/custom_text_field.dart';
+import 'package:client/auth/viewmodel/auth_viewmodel.dart';
 import 'package:client/core/constants/strings.dart';
 import 'package:client/core/extensions/app_context.dart';
 import 'package:client/core/theme/app_palette.dart';
+import 'package:client/core/utils/auth_listener_util.dart';
 import 'package:client/core/widgets/custom_text_btn.dart';
+import 'package:client/core/widgets/loader.dart';
 import 'package:flutter/material.dart';
-import 'package:fpdart/fpdart.dart' show Left, Right;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// This widget is part of the authentication module and is responsible for
 /// rendering the sign-in page of the application.
-class SigninPage extends StatefulWidget {
+class SigninPage extends ConsumerStatefulWidget {
   /// Creates a [SigninPage] widget.
   const SigninPage({super.key});
   @override
-  State<SigninPage> createState() => _SigninPageState();
+  ConsumerState<SigninPage> createState() => _SigninPageState();
 }
 
-class _SigninPageState extends State<SigninPage> {
+class _SigninPageState extends ConsumerState<SigninPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
@@ -34,6 +34,11 @@ class _SigninPageState extends State<SigninPage> {
   @override
   Widget build(BuildContext context) {
     final sizedBox = SizedBox(height: context.height * 0.02);
+    final isLoading = ref.watch(authViewModelProvider).isLoading == true;
+
+    AuthListenerUtil.listenForLogin(ref, context, () {
+      // TODO: Navigate to the home page or dashboard after successful login
+    });
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -62,22 +67,22 @@ class _SigninPageState extends State<SigninPage> {
                   obscureText: true,
                 ),
                 sizedBox,
-                AuthGradientBtn(
-                  onTap: () async {
-                    if (formKey.currentState?.validate() ?? false) {
-                      final res = await AuthRemoteRepositoryImpl().login(
-                        email: emailController.text,
-                        password: passwordController.text,
-                      );
-                      final val = switch (res) {
-                        Left(value: final l) => l,
-                        Right(value: final r) => r.toString(),
-                      };
-                      log('Login response: $val');
-                    }
-                  },
-                  buttonText: textSignIn,
-                ),
+                if (isLoading)
+                  const Loader()
+                else
+                  AuthGradientBtn(
+                    onTap: () async {
+                      if (formKey.currentState?.validate() ?? false) {
+                        await ref
+                            .read(authViewModelProvider.notifier)
+                            .login(
+                              email: emailController.text,
+                              password: passwordController.text,
+                            );
+                      }
+                    },
+                    buttonText: textSignIn,
+                  ),
                 sizedBox,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
