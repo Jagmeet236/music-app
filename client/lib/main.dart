@@ -1,11 +1,16 @@
 import 'package:client/auth/view/pages/signup_page.dart';
+import 'package:client/auth/viewmodel/auth_viewmodel.dart';
 import 'package:client/core/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ProviderScope(child: MusicApp()));
+  final container = ProviderContainer();
+  await container.read(authViewModelProvider.notifier).init();
+  runApp(
+    UncontrolledProviderScope(container: container, child: const MusicApp()),
+  );
 }
 
 /// Staring point root  widget
