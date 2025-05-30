@@ -5,5 +5,9 @@ import 'package:fpdart/fpdart.dart';
 /// or a success result of type [T].
 typedef ResultFuture<T> = Future<Either<AppFailure, T>>;
 
+/// Represents a future that returns either an [AppFailure]
+///  or completes with no value (void).
+typedef ResultVoid = ResultFuture<void>;
+
 /// Shorthand for a data payload.
 typedef DataMap = Map<String, dynamic>;

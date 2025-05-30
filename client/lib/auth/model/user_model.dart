@@ -17,13 +17,14 @@ DataMap userModelToJson(UserModel user) => user.toJson();
 /// - A `copyWith` method for immutability and convenience
 class UserModel extends Equatable {
   /// Creates a new [UserModel] instance.
-  const UserModel({this.id, this.email, this.name});
+  const UserModel({this.id, this.email, this.name, this.token});
 
   /// Factory constructor to create a [UserModel] from a JSON map.
   factory UserModel.fromJson(DataMap json) => UserModel(
-    id: json['id'] as String?,
-    email: json['email'] as String?,
-    name: json['name'] as String?,
+    id: json['id']?.toString(),
+    email: json['email']?.toString(),
+    name: json['name']?.toString(),
+    token: json['token']?.toString(),
   );
 
   /// The unique identifier of the user.
@@ -35,21 +36,30 @@ class UserModel extends Equatable {
   /// The user's display name.
   final String? name;
 
+  /// An optional authentication token for the user.
+  final String? token;
+
   /// Converts the [UserModel] to a JSON map.
-  DataMap toJson() => {'id': id, 'email': email, 'name': name};
+  DataMap toJson() => {
+    'id': id,
+    'email': email,
+    'name': name,
+    if (token != null) 'token': token,
+  };
 
   /// Creates a copy of the [UserModel] with optional updated fields.
-  UserModel copyWith({String? id, String? email, String? name}) {
+  UserModel copyWith({String? id, String? email, String? name, String? token}) {
     return UserModel(
       id: id ?? this.id,
       email: email ?? this.email,
       name: name ?? this.name,
+      token: token ?? this.token,
     );
   }
 
   @override
   String toString() {
-    return 'UserModel(id: $id, email: $email, name: $name)';
+    return 'UserModel(id: $id, email: $email, name: $name, )';
   }
 
   @override

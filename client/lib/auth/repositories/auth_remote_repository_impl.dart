@@ -35,17 +35,17 @@ class AuthRemoteRepositoryImpl implements AuthRemoteRepository {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'email': email, 'password': password}),
       );
-
-      debugPrint('Response status: ${response.statusCode}');
-      debugPrint('Response body: ${response.body}');
-
       // Cast decoded response to [DataMap] for better type safety
       final decoded = jsonDecode(response.body) as DataMap;
       if (response.statusCode == 200) {
         debugPrint('User logged in successfully');
 
         /// If the response is successful, parse the user data
-        return Right(UserModel.fromJson(decoded));
+        return Right(
+          UserModel.fromJson(
+            decoded['user'] as DataMap,
+          ).copyWith(token: decoded['token']?.toString()),
+        );
       } else {
         final errorMessage =
             decoded['message']?.toString() ??
