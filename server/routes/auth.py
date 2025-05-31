@@ -3,6 +3,7 @@ import uuid
 import bcrypt
 from fastapi import HTTPException, Depends
 from database import get_db
+from middleware.auth_middleware import auth_middleware
 from models.user import User 
 from pydantic_schemas.user_create import UserCreate
 from fastapi import APIRouter
@@ -48,6 +49,18 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
     if not is_match:
         raise HTTPException(status_code=400, detail='Incorrect password!')
     # Generate JWT token
-    token = jwt.encode({"user_id": user_db.id}, secret_key)
+    token = jwt.encode({"id": user_db.id}, secret_key)
     
     return {"token": token, "user": user_db}
+
+
+@router.get('/')
+def current_user_data(db: Session = Depends(get_db), 
+                      user_dict=Depends(auth_middleware) ):
+    # postgres database get the user info by id
+    db_user = db.query(User).filter(User.id == user_dict['uid']).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
+    
+
