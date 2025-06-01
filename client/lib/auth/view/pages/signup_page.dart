@@ -1,3 +1,4 @@
+import 'package:client/auth/model/auth_action.dart';
 import 'package:client/auth/view/pages/signin_page.dart';
 import 'package:client/auth/view/widgets/auth_gradient_btn.dart';
 import 'package:client/auth/view/widgets/custom_text_field.dart';
@@ -6,6 +7,7 @@ import 'package:client/core/constants/strings.dart';
 import 'package:client/core/extensions/app_context.dart';
 import 'package:client/core/theme/app_palette.dart';
 import 'package:client/core/utils/auth_listener_util.dart';
+import 'package:client/core/utils/custom_snack_bar.dart';
 import 'package:client/core/widgets/custom_text_btn.dart';
 import 'package:client/core/widgets/loader.dart';
 import 'package:flutter/material.dart';
@@ -35,9 +37,29 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(authViewModelProvider).isLoading == true;
-    debugPrint('SignupPage state: $isLoading');
-    AuthListenerUtil.listenForSignUp(ref, context, navigateToSignInPage);
+    // Watch the auth state for loading
+    final authState = ref.watch(authViewModelProvider);
+    final isLoading =
+        authState.isLoading && authState.lastAction == AuthAction.signUp;
+
+    debugPrint(
+      'SignupPage state: $isLoading, lastAction: ${authState.lastAction}',
+    );
+
+    // Listen only to SIGNUP actions
+    AuthListenerUtil.listenForSignUp(
+      ref,
+      context,
+      navigateToSignInPage,
+      onError: () {
+        showSnackBar(
+          context,
+          authState.errorMessage ?? 'An error occurred during signup',
+        );
+        debugPrint('Signup failed');
+      },
+    );
+
     final sizedBox = SizedBox(height: context.height * 0.02);
     return GestureDetector(
       onTap: () {
@@ -82,6 +104,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                               email: emailController.text,
                               password: passwordController.text,
                             );
+                      } else {
+                        showSnackBar(context, 'Please fill in all fields');
                       }
                     },
                     buttonText: textSignUp,

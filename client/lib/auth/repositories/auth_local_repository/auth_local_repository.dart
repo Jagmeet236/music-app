@@ -10,4 +10,7 @@ abstract class AuthLocalRepository {
 
   /// Retrieves the user token from local storage.
   String? getToken();
+
+  /// Saves the user data to local storage.
+  void clearToken();
 }

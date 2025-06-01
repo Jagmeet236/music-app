@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:client/auth/repositories/auth_local_repository.dart';
+import 'package:client/auth/repositories/auth_local_repository/auth_local_repository.dart';
 import 'package:client/core/error/failure.dart';
 import 'package:client/core/utils/typedef.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,5 +46,11 @@ class AuthLocalRepositoryImpl implements AuthLocalRepository {
   @override
   String? getToken() {
     return _sharedPreferences.getString('x-auth-token');
+  }
+
+  @override
+  void clearToken() {
+    log('Clearing user token from local storage');
+    _sharedPreferences.remove('x-auth-token');
   }
 }

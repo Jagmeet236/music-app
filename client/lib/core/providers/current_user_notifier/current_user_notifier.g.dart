@@ -1,28 +1,29 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_viewmodel.dart';
+part of 'current_user_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authViewModelHash() => r'110a627200f6d3ddefcecb24a71d659b94dd4a58';
+String _$currentUserNotifierHash() =>
+    r'e359da62a9285aecaa2455c272dcdd2dc451db03';
 
-/// ViewModel for managing authentication state and operations.
+/// Holds the currently authenticated user globally across the app.
 ///
-/// Copied from [AuthViewModel].
-@ProviderFor(AuthViewModel)
-final authViewModelProvider =
-    AutoDisposeNotifierProvider<AuthViewModel, AuthState>.internal(
-  AuthViewModel.new,
-  name: r'authViewModelProvider',
+/// Copied from [CurrentUserNotifier].
+@ProviderFor(CurrentUserNotifier)
+final currentUserNotifierProvider =
+    NotifierProvider<CurrentUserNotifier, UserModel?>.internal(
+  CurrentUserNotifier.new,
+  name: r'currentUserNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$authViewModelHash,
+      : _$currentUserNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$AuthViewModel = AutoDisposeNotifier<AuthState>;
+typedef _$CurrentUserNotifier = Notifier<UserModel?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

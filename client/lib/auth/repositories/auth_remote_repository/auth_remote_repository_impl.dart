@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:client/auth/model/user_model.dart';
-import 'package:client/auth/repositories/auth_remote_repository.dart';
+import 'package:client/auth/repositories/auth_remote_repository/auth_remote_repository.dart';
 import 'package:client/core/constants/server_constant.dart';
 import 'package:client/core/error/api_error_type.dart';
 import 'package:client/core/error/failure.dart';
@@ -29,6 +30,7 @@ class AuthRemoteRepositoryImpl implements AuthRemoteRepository {
     required String email,
     required String password,
   }) async {
+    log('Logging in user: $email');
     try {
       final response = await http.post(
         Uri.parse('${ServerConstant.serverUrl}/auth/login'),
@@ -75,6 +77,7 @@ class AuthRemoteRepositoryImpl implements AuthRemoteRepository {
     required String email,
     required String password,
   }) async {
+    log('Signing up user: $name, $email');
     try {
       final response = await http.post(
         Uri.parse('${ServerConstant.serverUrl}/auth/signup'),
@@ -86,6 +89,40 @@ class AuthRemoteRepositoryImpl implements AuthRemoteRepository {
 
       if (response.statusCode == 201) {
         return Right(UserModel.fromJson(decoded));
+      } else {
+        final errorMessage =
+            decoded['message']?.toString() ??
+            decoded['detail']?.toString() ??
+            'Unknown error';
+
+        return Left(AppFailure(errorMessage));
+      }
+    } on http.ClientException {
+      return Left(AppFailure(ApiErrorType.network.message));
+    } on FormatException {
+      return Left(AppFailure(ApiErrorType.badRequest.message));
+    } on TimeoutException {
+      return Left(AppFailure(ApiErrorType.timeout.message));
+    } on Exception catch (e) {
+      return Left(AppFailure('Unexpected error: $e'));
+    }
+  }
+
+  /// Retrieves the current user data using the provided [token].
+  @override
+  ResultFuture<UserModel> getCurrentUserData({required String token}) async {
+    try {
+      final response = await http.get(
+        Uri.parse('${ServerConstant.serverUrl}/auth/'),
+        headers: {'Content-Type': 'application/json', 'x-auth-token': token},
+      );
+      // Cast decoded response to [DataMap] for better type safety
+      final decoded = jsonDecode(response.body) as DataMap;
+      if (response.statusCode == 200) {
+        debugPrint('User data retrieved successfully');
+
+        /// If the response is successful, parse the user data
+        return Right(UserModel.fromJson(decoded).copyWith(token: token));
       } else {
         final errorMessage =
             decoded['message']?.toString() ??

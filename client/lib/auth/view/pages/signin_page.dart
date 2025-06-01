@@ -1,3 +1,4 @@
+import 'package:client/auth/model/auth_action.dart';
 import 'package:client/auth/view/pages/signup_page.dart';
 import 'package:client/auth/view/widgets/auth_gradient_btn.dart';
 import 'package:client/auth/view/widgets/custom_text_field.dart';
@@ -6,8 +7,10 @@ import 'package:client/core/constants/strings.dart';
 import 'package:client/core/extensions/app_context.dart';
 import 'package:client/core/theme/app_palette.dart';
 import 'package:client/core/utils/auth_listener_util.dart';
+import 'package:client/core/utils/custom_snack_bar.dart';
 import 'package:client/core/widgets/custom_text_btn.dart';
 import 'package:client/core/widgets/loader.dart';
+import 'package:client/home/view/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,12 +36,30 @@ class _SigninPageState extends ConsumerState<SigninPage> {
 
   @override
   Widget build(BuildContext context) {
-    final sizedBox = SizedBox(height: context.height * 0.02);
-    final isLoading = ref.watch(authViewModelProvider).isLoading == true;
+    // Watch the auth state for loading
+    final authState = ref.watch(authViewModelProvider);
+    final isLoading =
+        authState.isLoading && authState.lastAction == AuthAction.login;
 
-    AuthListenerUtil.listenForLogin(ref, context, () {
-      // TODO: Navigate to the home page or dashboard after successful login
-    });
+    debugPrint(
+      'SignupPage state: $isLoading, lastAction: ${authState.lastAction}',
+    );
+
+    // Listen only to SIGNUP actions
+    AuthListenerUtil.listenForLogin(
+      ref,
+      context,
+      navigateToHomePage,
+      onError: () {
+        showSnackBar(
+          context,
+          authState.errorMessage ?? 'An error occurred during login',
+        );
+        debugPrint('Login failed');
+      },
+    );
+
+    final sizedBox = SizedBox(height: context.height * 0.02);
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -79,6 +100,8 @@ class _SigninPageState extends ConsumerState<SigninPage> {
                               email: emailController.text,
                               password: passwordController.text,
                             );
+                      } else {
+                        showSnackBar(context, 'Please fill in all fields');
                       }
                     },
                     buttonText: textSignIn,
@@ -112,6 +135,13 @@ class _SigninPageState extends ConsumerState<SigninPage> {
   void navigateToSignUpPage() {
     Navigator.of(context).push(
       MaterialPageRoute<dynamic>(builder: (context) => const SignupPage()),
+    );
+  }
+
+  void navigateToHomePage() {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<dynamic>(builder: (context) => const HomePage()),
+      (_) => false,
     );
   }
 }
