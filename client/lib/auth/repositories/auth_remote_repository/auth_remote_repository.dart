@@ -20,13 +20,6 @@ abstract class AuthRemoteRepository {
     required String password,
   });
 
-  /// Signs out the currently logged-in user.
-  ///
-  /// Should clear any session or token.
-  // Future<void> signOut();
-
-  /// Sends a password reset email to the given [email].
-  ///
-  /// Throws an exception if the process fails.
-  // Future<void> resetPassword({required String email});
+  /// Retrieves the current user data using the provided [token].
+  ResultFuture<UserModel> getCurrentUserData({required String token});
 }
