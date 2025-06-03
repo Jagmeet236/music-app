@@ -5,9 +5,11 @@ class CustomTextField extends StatelessWidget {
   /// Creates a [CustomTextField] widget.
   const CustomTextField({
     required this.hintText,
-    required this.controller,
+    this.controller,
     super.key,
     this.obscureText = false,
+    this.readOnly = false,
+    this.onTap,
   });
 
   /// The hint text to display inside the text field.
@@ -15,14 +17,21 @@ class CustomTextField extends StatelessWidget {
   final String hintText;
 
   /// The controller to manage the text input in the field.
-  final TextEditingController controller;
+  final TextEditingController? controller;
 
   //// A boolean value indicating whether the text should be obscured (e.g., for passwords).
   final bool obscureText;
 
+  /// allows the text field to be read-only.
+  final bool readOnly;
+
+  /// to handle tap events on the text field.
+  final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onTap: onTap,
+      readOnly: readOnly,
       controller: controller,
       obscureText: obscureText,
       autovalidateMode: AutovalidateMode.onUserInteraction,

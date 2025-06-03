@@ -45,5 +45,12 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Apple Music access is required to play music.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo library access is required to select images.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is required to capture audio.</string>
+
 </dict>
 </plist>

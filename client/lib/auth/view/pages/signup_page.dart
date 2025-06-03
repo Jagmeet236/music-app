@@ -1,7 +1,6 @@
 import 'package:client/auth/model/auth_action.dart';
 import 'package:client/auth/view/pages/signin_page.dart';
 import 'package:client/auth/view/widgets/auth_gradient_btn.dart';
-import 'package:client/auth/view/widgets/custom_text_field.dart';
 import 'package:client/auth/viewmodel/auth_viewmodel.dart';
 import 'package:client/core/constants/strings.dart';
 import 'package:client/core/extensions/app_context.dart';
@@ -9,6 +8,7 @@ import 'package:client/core/theme/app_palette.dart';
 import 'package:client/core/utils/auth_listener_util.dart';
 import 'package:client/core/utils/custom_snack_bar.dart';
 import 'package:client/core/widgets/custom_text_btn.dart';
+import 'package:client/core/widgets/custom_text_field.dart';
 import 'package:client/core/widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
