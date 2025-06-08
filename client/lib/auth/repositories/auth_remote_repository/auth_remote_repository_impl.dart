@@ -16,6 +16,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'auth_remote_repository_impl.g.dart';
 
 /// Provides an instance of [AuthRemoteRepositoryImpl] for remote
+/// authentication operations.
 @riverpod
 AuthRemoteRepositoryImpl authRemoteRepositoryImpl(Ref ref) {
   return AuthRemoteRepositoryImpl();

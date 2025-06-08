@@ -42,3 +42,9 @@ const songName = 'Song Name';
 
 /// select color string
 const selectColor = 'Select a color for your song';
+
+/// home string
+const home = 'Home';
+
+/// library string
+const library = 'Library';
