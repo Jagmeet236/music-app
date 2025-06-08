@@ -1,10 +1,14 @@
 import 'package:client/auth/model/auth_action.dart';
 import 'package:client/auth/view/pages/signin_page.dart';
 import 'package:client/auth/viewmodel/auth_viewmodel.dart';
-import 'package:client/core/extensions/app_context.dart';
+import 'package:client/core/constants/strings.dart';
+import 'package:client/core/theme/app_palette.dart';
 
 import 'package:client/core/utils/auth_listener_util.dart';
 import 'package:client/core/utils/custom_snack_bar.dart';
+import 'package:client/core/utils/media_res.dart';
+import 'package:client/home/view/pages/library_page.dart';
+import 'package:client/home/view/pages/songs_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,6 +23,8 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
+  int selectedIndex = 0;
+  final pages = const [SongsPage(), LibraryPage()];
   @override
   Widget build(BuildContext context) {
     // Watch the auth state for loading
@@ -56,13 +62,36 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ],
       ),
-      body: Center(
-        child: Text(
-          'Welcome to the Home Page!',
-          style: context.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+      body: pages[selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: selectedIndex,
+        onTap: (value) {
+          setState(() {
+            selectedIndex = value;
+          });
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              selectedIndex == 0 ? MediaRes.homeFilled : MediaRes.homeUnfilled,
+              color:
+                  selectedIndex == 0
+                      ? Palette.whiteColor
+                      : Palette.inactiveBottomBarItemColor,
+            ),
+            label: home,
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              MediaRes.library,
+              color:
+                  selectedIndex == 1
+                      ? Palette.whiteColor
+                      : Palette.inactiveBottomBarItemColor,
+            ),
+            label: library,
+          ),
+        ],
       ),
     );
   }
