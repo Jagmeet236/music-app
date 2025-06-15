@@ -9,7 +9,9 @@ part of 'home_remote_repository_impl.dart';
 String _$homeRemoteRepositoryImplHash() =>
     r'44e6e7e43556f7a4ce2a11d5ece95cea25ee518b';
 
-/// See also [homeRemoteRepositoryImpl].
+/// Provides an instance of [HomeRemoteRepositoryImpl] for dependency injection.
+///
+/// Copied from [homeRemoteRepositoryImpl].
 @ProviderFor(homeRemoteRepositoryImpl)
 final homeRemoteRepositoryImplProvider =
     AutoDisposeProvider<HomeRemoteRepositoryImpl>.internal(
