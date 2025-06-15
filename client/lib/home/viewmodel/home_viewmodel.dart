@@ -2,11 +2,35 @@ import 'dart:io';
 
 import 'package:client/core/providers/current_user_notifier/current_user_notifier.dart';
 import 'package:client/core/utils/color_util.dart';
+import 'package:client/home/model/song_model.dart';
 import 'package:client/home/repositories/home_remote_repository/home_remote_repository_impl.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart' show Left, Right;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'home_viewmodel.g.dart';
+
+@riverpod
+/// Retrieves all songs from the remote server using the
+/// authenticated user's token.
+Future<List<SongModel>> getAllSongs(Ref ref) async {
+  final token = ref.watch(
+    currentUserNotifierProvider.select((user) => user?.token),
+  );
+
+  if (token == null || token.isEmpty) {
+    throw Exception('User token is missing');
+  }
+
+  final res = await ref
+      .read(homeRemoteRepositoryImplProvider)
+      .getAllSongs(token: token);
+
+  return switch (res) {
+    Left(value: final l) => throw Exception(l.message),
+    Right(value: final r) => r,
+  };
+}
 
 /// ViewModel to manage home-related logic such as uploading songs.
 @riverpod

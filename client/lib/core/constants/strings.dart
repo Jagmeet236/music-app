@@ -48,3 +48,6 @@ const home = 'Home';
 
 /// library string
 const library = 'Library';
+
+/// latest today string
+const latestToday = 'Latest Today';

@@ -9,6 +9,7 @@ import 'package:client/core/utils/custom_snack_bar.dart';
 import 'package:client/core/utils/media_res.dart';
 import 'package:client/home/view/pages/library_page.dart';
 import 'package:client/home/view/pages/songs_page.dart';
+import 'package:client/home/view/widgets/music_slab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -52,7 +53,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
         actions: [
           IconButton(
             onPressed: () {
@@ -62,7 +62,13 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ],
       ),
-      body: pages[selectedIndex],
+      body: Stack(
+        children: [
+          pages[selectedIndex],
+          const Positioned(bottom: 0, child: MusicSlab()),
+        ],
+      ),
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
         onTap: (value) {

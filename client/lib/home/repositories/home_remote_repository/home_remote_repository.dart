@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:client/core/utils/typedef.dart';
+import 'package:client/home/model/song_model.dart';
 
 /// Defines remote data operations for home-related features like song management\
 abstract class HomeRemoteRepository {
@@ -14,6 +15,7 @@ abstract class HomeRemoteRepository {
     required String token,
   });
 
-  /// to get the all the songs from the remote server
-  // ResultFuture<SongModel> getSongs();
+  /// Returns a [ResultFuture] that contains either a [List<SongModel>]
+  ///  on success or an AppFailure on error.
+  ResultFuture<List<SongModel>> getAllSongs({required String token});
 }
