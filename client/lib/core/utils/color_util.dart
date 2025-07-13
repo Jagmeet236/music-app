@@ -11,9 +11,15 @@ import 'package:flutter/material.dart';
 /// final hex = rgbToHex(color); // Returns '42A5F5'
 /// ```
 String rgbToHex(Color color) {
-  return '${color.r.toInt().toRadixString(16).padLeft(2, '0')}'
-      '${color.g.toInt().toRadixString(16).padLeft(2, '0')}'
-      '${color.b.toInt().toRadixString(16).padLeft(2, '0')}';
+  // Extract RGB values using bit operations
+  final red = (color.value >> 16) & 0xFF;
+  final green = (color.value >> 8) & 0xFF;
+  final blue = color.value & 0xFF;
+
+  return '${red.toRadixString(16).padLeft(2, '0')}'
+          '${green.toRadixString(16).padLeft(2, '0')}'
+          '${blue.toRadixString(16).padLeft(2, '0')}'
+      .toUpperCase();
 }
 
 /// Converts a hexadecimal RGB string (e.g., 'AABBCC') to a [Color] object.
@@ -26,5 +32,11 @@ String rgbToHex(Color color) {
 /// final color = hexToColor('42A5F5'); // Returns Color(0xFF42A5F5)
 /// ```
 Color hexToColor(String hex) {
-  return Color(int.parse(hex, radix: 16) + 0xFF000000);
+  // Remove '#' if present
+  var cleanHex = hex;
+  if (hex.startsWith('#')) {
+    cleanHex = hex.substring(1);
+  }
+
+  return Color(int.parse(cleanHex, radix: 16) + 0xFF000000);
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:client/core/constants/enums/api_error_type.dart';
@@ -33,6 +34,7 @@ class HomeRemoteRepositoryImpl implements HomeRemoteRepository {
     required String hexCode,
     required String token,
   }) async {
+    log(hexCode);
     try {
       final request =
           http.MultipartRequest(

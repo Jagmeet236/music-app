@@ -23,4 +23,16 @@ class MediaRes {
 
   /// Image asset: playlist.png';
   static const String shuffle = '$_baseUrl/shuffle.png';
+
+  /// Image asset: previous-song.png';
+  static const String previousSong = '$_baseUrl/previous-song.png';
+
+  /// Image asset: next-song.png';
+  static const String nextSong = '$_baseUrl/next-song.png';
+
+  /// Image asset: next-song.png';
+  static const String repeat = '$_baseUrl/repeat.png';
+
+  /// Image asset: pull-down-arrow.png';
+  static const String pullDownArrow = '$_baseUrl/pull-down-arrow.png';
 }

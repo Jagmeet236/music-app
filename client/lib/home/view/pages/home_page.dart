@@ -9,6 +9,7 @@ import 'package:client/core/utils/custom_snack_bar.dart';
 import 'package:client/core/utils/media_res.dart';
 import 'package:client/home/view/pages/library_page.dart';
 import 'package:client/home/view/pages/songs_page.dart';
+import 'package:client/home/view/pages/upload_song_page.dart';
 import 'package:client/home/view/widgets/music_slab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,7 +26,7 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   int selectedIndex = 0;
-  final pages = const [SongsPage(), LibraryPage()];
+  final pages = const [SongsPage(), LibraryPage(), UploadSongPage()];
   @override
   Widget build(BuildContext context) {
     // Watch the auth state for loading
@@ -96,6 +97,16 @@ class _HomePageState extends ConsumerState<HomePage> {
                       : Palette.inactiveBottomBarItemColor,
             ),
             label: library,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              selectedIndex == 2 ? Icons.upload : Icons.upload_file_outlined,
+              color:
+                  selectedIndex == 2
+                      ? Palette.whiteColor
+                      : Palette.inactiveBottomBarItemColor,
+            ),
+            label: uploadSong,
           ),
         ],
       ),
