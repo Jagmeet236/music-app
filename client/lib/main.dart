@@ -29,7 +29,6 @@ class MusicApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserNotifierProvider);
     return MaterialApp(
-      /// title of the app
       title: 'Music App',
       theme: AppTheme.darkThemeMode,
 
