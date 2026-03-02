@@ -1,116 +1,180 @@
+import 'dart:math';
 import 'package:client/core/extensions/app_context.dart';
 import 'package:client/core/providers/current_song_notifier/current_song_notifier.dart';
 import 'package:client/core/theme/app_palette.dart';
 import 'package:client/core/utils/color_util.dart';
+import 'package:client/home/view/widgets/music_player.dart';
+import 'package:client/home/view/widgets/song_thumbnail.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-///
+/// Displays a slab UI for the currently playing song
+/// with play/pause and like actions.
 class MusicSlab extends ConsumerWidget {
-  ///
+  /// Creates a [MusicSlab] widget.
   const MusicSlab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentSong = ref.watch(currentSongNotifierProvider);
-    if (currentSong == null) {
+    final currentSongState = ref.watch(currentSongNotifierProvider);
+    final songNotifier = ref.read(currentSongNotifierProvider.notifier);
+
+    if (currentSongState.song == null) {
       return const SizedBox();
     }
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: hexToColor(currentSong.hexCode ?? ''),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          height: 86,
-          width: context.width - 16,
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
+
+    final song = currentSongState.song!;
+    final isPlaying = currentSongState.isPlaying;
+    final songColor =
+        (song.hexCode != null && song.hexCode!.length == 6)
+            ? hexToColor(song.hexCode!)
+            : Palette.cardColor;
+
+    return GestureDetector(
+      onTap: () => navigateToMusicPlayer(context),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Container(
+              height: 86,
+              width: context.width - 16,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: songColor,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: 48,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(currentSong.thumbnailUrl ?? ''),
-                        fit: BoxFit.fill,
-                      ),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Row(
                     children: [
-                      Text(
-                        currentSong.songName ?? 'N/A',
-                        style: context.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w500,
+                      Hero(
+                        tag: 'music-tag',
+                        child: SongThumbnail(
+                          imageUrl: song.thumbnailUrl,
+                          width: context.width * .14,
+                          height: context.height * .2,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            song.songName ?? 'N/A',
+                            style: context.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: Palette.whiteColor,
+                            ),
+                          ),
+                          Text(
+                            song.artist ?? 'N/A',
+                            style: context.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: Palette.subtitleText,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          // TODO: Handle like toggle
+                        },
+                        icon: const Icon(
+                          CupertinoIcons.heart,
                           color: Palette.whiteColor,
                         ),
                       ),
-                      Text(
-                        currentSong.artist ?? 'N/A',
-                        style: context.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: Palette.subtitleText,
+                      IconButton(
+                        onPressed: () async => songNotifier.playPause(),
+                        icon: Icon(
+                          isPlaying
+                              ? CupertinoIcons.pause_circle_fill
+                              : CupertinoIcons.play_circle_fill,
+                          color: Palette.whiteColor,
                         ),
                       ),
                     ],
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      CupertinoIcons.heart,
-                      color: Palette.whiteColor,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      CupertinoIcons.play_circle_fill,
-                      color: Palette.whiteColor,
-                    ),
-                  ),
-                ],
+            ),
+          ),
+
+          /// Inactive background progress bar
+          Positioned(
+            bottom: 0,
+            left: 8,
+            child: Container(
+              height: 2,
+              width: context.width - 22,
+              decoration: BoxDecoration(
+                color: Palette.inactiveSeekColor,
+                borderRadius: BorderRadius.circular(7),
               ),
-            ],
-          ),
-        ),
-        Positioned(
-          bottom: 0,
-          left: 8,
-          child: Container(
-            height: 2,
-            width: 20,
-            decoration: BoxDecoration(
-              color: Palette.whiteColor,
-              borderRadius: BorderRadius.circular(7),
             ),
           ),
-        ),
-        Positioned(
-          bottom: 0,
-          left: 8,
-          child: Container(
-            height: 2,
-            width: context.width - 32,
-            decoration: BoxDecoration(
-              color: Palette.inactiveSeekColor,
-              borderRadius: BorderRadius.circular(7),
-            ),
+
+          /// Active position progress bar
+          StreamBuilder<Duration>(
+            stream: songNotifier.audioPlayer?.positionStream,
+            builder: (context, snapshot) {
+              final position = snapshot.data;
+              final duration = songNotifier.audioPlayer?.duration;
+
+              if (position == null ||
+                  duration == null ||
+                  duration.inMilliseconds == 0) {
+                return const SizedBox();
+              }
+
+              final sliderValue = (position.inMilliseconds /
+                      duration.inMilliseconds)
+                  .clamp(0.0, 1.0);
+
+              return Positioned(
+                bottom: 0,
+                left: 8,
+                child: Container(
+                  height: 2,
+                  width: max(0, sliderValue * (context.width - 22)),
+                  decoration: BoxDecoration(
+                    color: Palette.whiteColor,
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+              );
+            },
           ),
-        ),
-      ],
+        ],
+      ),
+    );
+  }
+
+  /// Navigates to the music player screen.
+  void navigateToMusicPlayer(BuildContext context) {
+    Navigator.of(context).push(
+      PageRouteBuilder<dynamic>(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return const MusicPlayer();
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          final tween = Tween(
+            begin: const Offset(0, 1),
+            end: Offset.zero,
+          ).chain(CurveTween(curve: Curves.easeIn));
+          final offSetAnimation = animation.drive(tween);
+          return SlideTransition(position: offSetAnimation, child: child);
+        },
+      ),
     );
   }
 }
