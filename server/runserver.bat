@@ -1,4 +1,4 @@
 @echo off
 call venv\Scripts\activate.bat
-fastapi dev main.py
-
+uvicorn main:app --reload
+pause
