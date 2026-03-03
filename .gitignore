@@ -17,7 +17,9 @@ client/.packages
 client/.flutter-plugins
 client/.flutter-plugins-dependencies
 client/pubspec.lock
-
+# Python virtual environment
+server/venv/
+venv/
 # Ignore FastAPI cache and environment files
 server/__pycache__/
 server/*.env
