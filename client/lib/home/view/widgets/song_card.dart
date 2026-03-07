@@ -1,5 +1,5 @@
 import 'package:client/core/theme/app_palette.dart';
-import 'package:client/home/model/song_model.dart';
+import 'package:client/home/data/models/song_model.dart';
 import 'package:client/home/view/widgets/song_thumbnail.dart';
 import 'package:flutter/material.dart';
 

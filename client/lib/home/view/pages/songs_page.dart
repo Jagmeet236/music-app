@@ -4,21 +4,23 @@ import 'package:client/core/providers/current_song_notifier/current_song_notifie
 import 'package:client/core/widgets/loader.dart';
 import 'package:client/home/view/widgets/song_card.dart';
 import 'package:client/home/viewmodel/home_viewmodel.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// A page that displays a horizontal list of songs.
 class SongsPage extends ConsumerStatefulWidget {
-  /// Creates a [SongsPage] widget.
+  /// Creates a [SongsPage] widg
   const SongsPage({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _SongsPageState();
+  ConsumerState<SongsPage> createState() => _SongsPageState();
 }
 
 class _SongsPageState extends ConsumerState<SongsPage> {
   @override
   Widget build(BuildContext context) {
+    final songsAsync = ref.watch(homeViewModelProvider);
+
     return SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,35 +35,35 @@ class _SongsPageState extends ConsumerState<SongsPage> {
             ),
           ),
           const SizedBox(height: 20),
-          ref
-              .watch(getAllSongsProvider)
-              .when(
-                data: (songs) {
-                  return SizedBox(
-                    height: 270,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: songs.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 12),
-                      itemBuilder: (context, index) {
-                        final song = songs[index];
-                        return GestureDetector(
-                          onTap: () {
-                            ref
-                                .read(currentSongNotifierProvider.notifier)
-                                .updateSong(song);
-                          },
-                          child: SongCard(song: song),
-                        );
+
+          songsAsync.when(
+            data: (songs) {
+              return SizedBox(
+                height: 270,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: songs.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    final song = songs[index];
+
+                    return GestureDetector(
+                      onTap: () {
+                        ref
+                            .read(currentSongNotifierProvider.notifier)
+                            .updateSong(song);
                       },
-                    ),
-                  );
-                },
-                error: (error, st) => Center(child: Text(error.toString())),
-                loading: () => const Loader(),
-              ),
+                      child: SongCard(song: song),
+                    );
+                  },
+                ),
+              );
+            },
+            error: (error, _) => Center(child: Text(error.toString())),
+            loading: () => const Loader(),
+          ),
         ],
       ),
     );

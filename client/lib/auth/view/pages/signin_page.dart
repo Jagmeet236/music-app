@@ -1,4 +1,4 @@
-import 'package:client/auth/model/auth_action.dart';
+import 'package:client/auth/data/models/auth_action.dart';
 import 'package:client/auth/view/pages/signup_page.dart';
 import 'package:client/auth/view/widgets/auth_gradient_btn.dart';
 import 'package:client/auth/viewmodel/auth_viewmodel.dart';

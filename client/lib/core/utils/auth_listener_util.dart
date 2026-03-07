@@ -1,5 +1,5 @@
 // File: lib/core/utils/auth_listener_util.dart
-import 'package:client/auth/model/auth_action.dart';
+import 'package:client/auth/data/models/auth_action.dart';
 import 'package:client/auth/viewmodel/auth_viewmodel.dart';
 
 import 'package:client/core/utils/custom_snack_bar.dart';

@@ -8,10 +8,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   final container = ProviderContainer();
-  await container.read(authViewModelProvider.notifier).init();
+
   final userModel =
-      await container.read(authViewModelProvider.notifier).getData();
+      await container.read(authViewModelProvider.notifier).getCurrentUser();
+
   debugPrint('UserModel: $userModel');
 
   runApp(
