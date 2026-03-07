@@ -6,9 +6,9 @@ part of 'auth_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authViewModelHash() => r'8596f83e04b7f4b889676bb5f6882b9dcc9c1054';
+String _$authViewModelHash() => r'eb68d4450bc09e1926843bc00e57563278aa46b3';
 
-/// ViewModel for managing authentication state and operations.
+/// Manages authentication state and operations using [AuthRepository].
 ///
 /// Copied from [AuthViewModel].
 @ProviderFor(AuthViewModel)
@@ -25,4 +25,4 @@ final authViewModelProvider =
 
 typedef _$AuthViewModel = AutoDisposeNotifier<AuthState>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -1,49 +1,64 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:client/core/providers/current_user_notifier/current_user_notifier.dart';
 import 'package:client/core/utils/color_util.dart';
-import 'package:client/home/model/song_model.dart';
-import 'package:client/home/repositories/home_remote_repository/home_remote_repository_impl.dart';
+import 'package:client/home/data/models/song_model.dart';
+import 'package:client/home/data/repositories/home_remote_repository_impl.dart';
+import 'package:client/home/domain/repositories/home_remote_repository/home_remote_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fpdart/fpdart.dart' show Left, Right;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 part 'home_viewmodel.g.dart';
 
-@riverpod
-/// Retrieves all songs from the remote server using the
-/// authenticated user's token.
-Future<List<SongModel>> getAllSongs(Ref ref) async {
-  final token = ref.watch(
-    currentUserNotifierProvider.select((user) => user?.token),
-  );
-
-  if (token == null || token.isEmpty) {
-    throw Exception('User token is missing');
-  }
-
-  final res = await ref
-      .read(homeRemoteRepositoryImplProvider)
-      .getAllSongs(token: token);
-
-  return switch (res) {
-    Left(value: final l) => throw Exception(l.message),
-    Right(value: final r) => r,
-  };
-}
-
-/// ViewModel to manage home-related logic such as uploading songs.
+/// ViewModel responsible for handling home feature logic.
 @riverpod
 class HomeViewModel extends _$HomeViewModel {
-  late HomeRemoteRepositoryImpl _homeRemoteRepositoryImpl;
+  late final HomeRemoteRepository _repository;
 
+  /// Automatically called when provider is first created
   @override
-  AsyncValue<dynamic>? build() {
-    _homeRemoteRepositoryImpl = ref.watch(homeRemoteRepositoryImplProvider);
-    return null;
+  FutureOr<List<SongModel>> build() async {
+    _repository = ref.watch(homeRemoteRepositoryProvider);
+
+    final token = ref.watch(
+      currentUserNotifierProvider.select((user) => user?.token),
+    );
+
+    if (token == null || token.isEmpty) {
+      throw Exception('User token is missing');
+    }
+
+    final result = await _repository.getAllSongs(token: token);
+
+    return result.fold(
+      (failure) => throw Exception(failure.message),
+      (songs) => songs,
+    );
   }
 
-  /// Uploads a song and updates the UI state accordingly.
+  /// Manually refresh songs
+  Future<void> fetchSongs() async {
+    state = const AsyncValue.loading();
+
+    state = await AsyncValue.guard(() async {
+      final token =
+          ref.read(currentUserNotifierProvider)?.token ?? '';
+
+      if (token.isEmpty) {
+        throw Exception('User token is missing');
+      }
+
+      final result = await _repository.getAllSongs(token: token);
+
+      return result.fold(
+        (failure) => throw Exception(failure.message),
+        (songs) => songs,
+      );
+    });
+  }
+
+  /// Uploads a song and refreshes list on success
   Future<void> uploadSong({
     required File selectedAudio,
     required File selectedThumbnail,
@@ -51,20 +66,39 @@ class HomeViewModel extends _$HomeViewModel {
     required String artist,
     required Color selectedColor,
   }) async {
+    final token =
+        ref.read(currentUserNotifierProvider)?.token ?? '';
+
+    if (token.isEmpty) {
+      state = AsyncValue.error(
+        'User token is missing',
+        StackTrace.current,
+      );
+      return;
+    }
+
     state = const AsyncValue.loading();
-    final response = await _homeRemoteRepositoryImpl.uploadSong(
+
+    final response = await _repository.uploadSong(
       selectedAudio: selectedAudio,
       selectedThumbnail: selectedThumbnail,
       songName: songName,
       artist: artist,
       hexCode: rgbToHex(selectedColor),
-      token: ref.read(currentUserNotifierProvider)!.token ?? '',
+      token: token,
     );
-    final val = switch (response) {
-      Left(value: final l) =>
-        state = AsyncError<String>(l.message, StackTrace.current),
-      Right(value: final r) => state = AsyncValue.data(r),
-    };
-    debugPrint('Upload Song Response: $val');
+
+    response.fold(
+      (failure) {
+        state = AsyncValue.error(
+          failure.message,
+          StackTrace.current,
+        );
+      },
+      (_) async {
+        // Refresh songs after successful upload
+        await fetchSongs();
+      },
+    );
   }
 }

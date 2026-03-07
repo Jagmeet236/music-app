@@ -66,7 +66,7 @@ class _UploadSongPageState extends ConsumerState<UploadSongPage> {
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(
-      homeViewModelProvider.select((val) => val?.isLoading ?? false),
+      homeViewModelProvider.select((val) => val.isLoading ?? false),
     );
     const sizedBox = SizedBox(height: 20);
     return Scaffold(

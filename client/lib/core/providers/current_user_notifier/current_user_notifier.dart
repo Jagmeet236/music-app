@@ -1,4 +1,4 @@
-import 'package:client/auth/model/user_model.dart';
+import 'package:client/auth/data/models/user_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'current_user_notifier.g.dart';
 

@@ -7,7 +7,7 @@ part of 'current_song_notifier.dart';
 // **************************************************************************
 
 String _$currentSongNotifierHash() =>
-    r'6d3a68eec79bd6c07583c0ea8d98d7c61fc57cba';
+    r'bdffb6c9e20fbce9518751a8d4d56921ca5dacf9';
 
 /// Manages the audio playback and current song state in the app.
 ///
@@ -26,4 +26,4 @@ final currentSongNotifierProvider =
 
 typedef _$CurrentSongNotifier = AutoDisposeNotifier<CurrentSongState>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

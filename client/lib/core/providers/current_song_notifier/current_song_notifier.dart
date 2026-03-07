@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:client/core/providers/current_song_notifier/current_song_state.dart';
-import 'package:client/home/model/song_model.dart';
+import 'package:client/home/data/models/song_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

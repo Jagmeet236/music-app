@@ -1,4 +1,4 @@
-import 'package:client/home/model/song_model.dart';
+import 'package:client/home/data/models/song_model.dart';
 import 'package:equatable/equatable.dart';
 
 /// Represents the state of the currently playing song,

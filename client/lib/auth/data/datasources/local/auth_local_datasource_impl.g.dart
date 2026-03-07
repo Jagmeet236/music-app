@@ -1,29 +1,28 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'current_user_notifier.dart';
+part of 'auth_local_datasource_impl.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$currentUserNotifierHash() =>
-    r'e359da62a9285aecaa2455c272dcdd2dc451db03';
+String _$authLocalDatasourceHash() =>
+    r'a92563490c02fe3216aec20eba67bcc077a25517';
 
-/// Holds the currently authenticated user globally across the app.
+/// Riverpod provider for [AuthLocalDatasource].
 ///
-/// Copied from [CurrentUserNotifier].
-@ProviderFor(CurrentUserNotifier)
-final currentUserNotifierProvider =
-    NotifierProvider<CurrentUserNotifier, UserModel?>.internal(
-  CurrentUserNotifier.new,
-  name: r'currentUserNotifierProvider',
+/// Copied from [authLocalDatasource].
+@ProviderFor(authLocalDatasource)
+final authLocalDatasourceProvider = Provider<AuthLocalDatasource>.internal(
+  authLocalDatasource,
+  name: r'authLocalDatasourceProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$currentUserNotifierHash,
+      : _$authLocalDatasourceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$CurrentUserNotifier = Notifier<UserModel?>;
+typedef AuthLocalDatasourceRef = ProviderRef<AuthLocalDatasource>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
