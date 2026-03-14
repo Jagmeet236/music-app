@@ -51,12 +51,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
       ref,
       context,
       navigateToSignInPage,
-      onError: () {
-        showSnackBar(
-          context,
-          authState.errorMessage ?? 'An error occurred during signup',
-        );
-        debugPrint('Signup failed');
+      onError: (errorMessage) {
+        debugPrint('Signup failed: $errorMessage');
       },
     );
 

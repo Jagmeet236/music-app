@@ -43,13 +43,9 @@ class _HomePageState extends ConsumerState<HomePage> {
       ref,
       context,
       navigateToSignInPage,
-      onError: () {
-        final authState = ref.read(authViewModelProvider);
-        showSnackBar(
-          context,
-          authState.errorMessage ?? 'An error occurred during signup',
-        );
-        debugPrint('Signup failed');
+      onError: (errorMessage) {
+        showSnackBar(context, errorMessage);
+        debugPrint('Logout failed: $errorMessage');
       },
     );
     return Scaffold(

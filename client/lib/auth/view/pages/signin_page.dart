@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:client/auth/data/models/auth_action.dart';
 import 'package:client/auth/view/pages/signup_page.dart';
 import 'package:client/auth/view/widgets/auth_gradient_btn.dart';
@@ -45,17 +47,13 @@ class _SigninPageState extends ConsumerState<SigninPage> {
       'SignupPage state: $isLoading, lastAction: ${authState.lastAction}',
     );
 
-    // Listen only to SIGNUP actions
+    // Listen only to LOGIN actions
     AuthListenerUtil.listenForLogin(
       ref,
       context,
       navigateToHomePage,
-      onError: () {
-        showSnackBar(
-          context,
-          authState.errorMessage ?? 'An error occurred during login',
-        );
-        debugPrint('Login failed');
+      onError: (errorMessage) {
+        debugPrint('Login failed: $errorMessage');
       },
     );
 

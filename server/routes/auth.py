@@ -39,18 +39,24 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.post('/login')
 def login_user(user: UserLogin, db: Session = Depends(get_db)):
-    # Check if user exists in the database
+    # Check if an account with this email exists
     user_db = db.query(User).filter(User.email == user.email).first()
     if not user_db:
-        raise HTTPException(status_code=400, detail='User with the given email does not exist!')
-    # Check if the password is provided
-    # Compare password (user input) with hashed password from DB
+        raise HTTPException(
+            status_code=404,
+            detail=f'User with the given email does not exist!',
+        )
+
+    # Verify the provided password against the stored hash
     is_match = bcrypt.checkpw(user.password.encode(), user_db.password)
     if not is_match:
-        raise HTTPException(status_code=400, detail='Incorrect password!')
-    # Generate JWT token
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials. Please try again.",
+        )
+
+    # Generate JWT token for the authenticated user
     token = jwt.encode({"id": user_db.id}, secret_key)
-    
     return {"token": token, "user": user_db}
 
 

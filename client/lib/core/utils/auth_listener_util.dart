@@ -28,8 +28,8 @@ class AuthListenerConfig {
   /// Optional success message to display on successful action
   final String? successMessage;
 
-  /// Optional callbacks for error handling and loading state
-  final VoidCallback? onError;
+  /// Optional callback called with the error message when an error occurs
+  final void Function(String errorMessage)? onError;
 
   /// Optional custom error message to display on error
   final String? customErrorMessage;
@@ -61,7 +61,7 @@ class AuthListenerUtil {
           if (config.showDefaultErrorMessage) {
             showSnackBar(context, errorMsg);
           }
-          config.onError?.call();
+          config.onError?.call(errorMsg);
         } else {
           // Handle success (no error and not loading)
           if (config.successMessage != null) {
@@ -98,7 +98,7 @@ class AuthListenerUtil {
         if (matchingConfig.showDefaultErrorMessage) {
           showSnackBar(context, errorMsg);
         }
-        matchingConfig.onError?.call();
+        matchingConfig.onError?.call(errorMsg);
       } else {
         if (matchingConfig.successMessage != null) {
           showSnackBar(context, matchingConfig.successMessage!);
@@ -114,7 +114,7 @@ class AuthListenerUtil {
     BuildContext context,
     VoidCallback navigateToSignIn, {
     String? customSuccessMessage,
-    VoidCallback? onError,
+    void Function(String errorMessage)? onError,
   }) {
     listenForAction(
       ref,
@@ -136,7 +136,7 @@ class AuthListenerUtil {
     BuildContext context,
     VoidCallback navigateToHome, {
     String? customSuccessMessage,
-    VoidCallback? onError,
+    void Function(String errorMessage)? onError,
   }) {
     listenForAction(
       ref,
@@ -156,7 +156,7 @@ class AuthListenerUtil {
     BuildContext context,
     VoidCallback navigateToLogin, {
     String? customSuccessMessage,
-    VoidCallback? onError,
+    void Function(String errorMessage)? onError,
   }) {
     listenForAction(
       ref,
