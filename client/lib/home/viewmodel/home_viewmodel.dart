@@ -14,7 +14,7 @@ part 'home_viewmodel.g.dart';
 /// ViewModel responsible for handling home feature logic.
 @riverpod
 class HomeViewModel extends _$HomeViewModel {
-  late final HomeRemoteRepository _repository;
+  late HomeRemoteRepository _repository;
 
   /// Automatically called when provider is first created
   @override
@@ -26,7 +26,7 @@ class HomeViewModel extends _$HomeViewModel {
     );
 
     if (token == null || token.isEmpty) {
-      throw Exception('User token is missing');
+      return []; // User logged out — let auth listener handle navigation
     }
 
     final result = await _repository.getAllSongs(token: token);
@@ -42,8 +42,7 @@ class HomeViewModel extends _$HomeViewModel {
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
-      final token =
-          ref.read(currentUserNotifierProvider)?.token ?? '';
+      final token = ref.read(currentUserNotifierProvider)?.token ?? '';
 
       if (token.isEmpty) {
         throw Exception('User token is missing');
@@ -66,14 +65,10 @@ class HomeViewModel extends _$HomeViewModel {
     required String artist,
     required Color selectedColor,
   }) async {
-    final token =
-        ref.read(currentUserNotifierProvider)?.token ?? '';
+    final token = ref.read(currentUserNotifierProvider)?.token ?? '';
 
     if (token.isEmpty) {
-      state = AsyncValue.error(
-        'User token is missing',
-        StackTrace.current,
-      );
+      state = AsyncValue.error('User token is missing', StackTrace.current);
       return;
     }
 
@@ -90,10 +85,7 @@ class HomeViewModel extends _$HomeViewModel {
 
     response.fold(
       (failure) {
-        state = AsyncValue.error(
-          failure.message,
-          StackTrace.current,
-        );
+        state = AsyncValue.error(failure.message, StackTrace.current);
       },
       (_) async {
         // Refresh songs after successful upload

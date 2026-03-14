@@ -43,7 +43,7 @@ class AuthState extends Equatable {
   }) {
     return AuthState(
       user: user ?? this.user,
-      lastAction: lastAction,
+      lastAction: lastAction ?? this.lastAction,
       errorMessage: errorMessage,
       isLoading: isLoading ?? this.isLoading,
     );

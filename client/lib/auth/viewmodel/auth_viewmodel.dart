@@ -74,6 +74,7 @@ class AuthViewModel extends _$AuthViewModel {
     switch (result) {
       case Left(value: final failure):
         state = state.copyWith(
+          user: state.user,
           isLoading: false,
           errorMessage: failure.message,
           lastAction: null,
@@ -125,14 +126,24 @@ class AuthViewModel extends _$AuthViewModel {
     await _authRepository.logout();
     _currentUserNotifier.user = null;
 
-    state = state.copyWith(user: null, isLoading: false, errorMessage: null);
+    state = state.copyWith(
+      user: null,
+      isLoading: false,
+      errorMessage: null,
+      lastAction: AuthAction.logout,
+    );
 
     log('Logout completed');
   }
 
   /// Resets the last authentication action and error message.
   void clearAction() {
-    state = state.copyWith(lastAction: null, errorMessage: null);
+    state = AuthState(
+      user: state.user,
+      isLoading: false,
+      lastAction: null,
+      errorMessage: null,
+    );
   }
 
   /// Clears the current error message.
