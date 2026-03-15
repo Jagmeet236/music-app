@@ -7,6 +7,7 @@ import 'package:client/core/theme/app_palette.dart';
 import 'package:client/core/utils/auth_listener_util.dart';
 import 'package:client/core/utils/custom_snack_bar.dart';
 import 'package:client/core/utils/media_res.dart';
+import 'package:client/core/widgets/app_dialog.dart';
 import 'package:client/home/view/pages/library_page.dart';
 import 'package:client/home/view/pages/songs_page.dart';
 import 'package:client/home/view/pages/upload_song_page.dart';
@@ -52,9 +53,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {
-              ref.read(authViewModelProvider.notifier).logout();
-            },
+            onPressed: isLoading ? null : _showLogoutDialog,
             icon: const Icon(Icons.logout),
           ),
         ],
@@ -103,6 +102,34 @@ class _HomePageState extends ConsumerState<HomePage> {
                       : Palette.inactiveBottomBarItemColor,
             ),
             label: uploadSong,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// confrim logout dialog
+  void _showLogoutDialog() {
+    showAppDialog<void>(
+      context,
+      AppDialog(
+        imagePosition: ImagePosition.aboveText,
+        image: Image.asset(MediaRes.logOut, height: 140),
+        title: 'Log out',
+        subtitle: 'Are you sure you want to log out of your account?',
+        buttons: [
+          AppDialogButton.no(
+            text: 'Cancel',
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          AppDialogButton.yes(
+            text: 'Log out',
+            onTap: () {
+              Navigator.pop(context);
+              ref.read(authViewModelProvider.notifier).logout();
+            },
           ),
         ],
       ),
