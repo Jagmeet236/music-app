@@ -35,4 +35,10 @@ class MediaRes {
 
   /// Image asset: pull-down-arrow.png';
   static const String pullDownArrow = '$_baseUrl/pull-down-arrow.png';
+
+  /// Image asset: app_logo.png';
+  static const String appLogo = '$_baseUrl/app_logo.png';
+
+  /// Image asset: logOut.png';
+  static const String logOut = '$_baseUrl/log_out_logo.png';
 }

@@ -2,11 +2,12 @@ import 'package:client/auth/data/models/auth_action.dart';
 import 'package:client/auth/view/pages/signin_page.dart';
 import 'package:client/auth/viewmodel/auth_viewmodel.dart';
 import 'package:client/core/constants/strings.dart';
+import 'package:client/core/providers/bottom_nav_provider/bottom_nav_provider.dart';
 import 'package:client/core/theme/app_palette.dart';
-
 import 'package:client/core/utils/auth_listener_util.dart';
 import 'package:client/core/utils/custom_snack_bar.dart';
 import 'package:client/core/utils/media_res.dart';
+import 'package:client/core/widgets/app_dialog.dart';
 import 'package:client/home/view/pages/library_page.dart';
 import 'package:client/home/view/pages/songs_page.dart';
 import 'package:client/home/view/pages/upload_song_page.dart';
@@ -25,10 +26,11 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  int selectedIndex = 0;
   final pages = const [SongsPage(), LibraryPage(), UploadSongPage()];
+
   @override
   Widget build(BuildContext context) {
+    final selectedIndex = ref.watch(bottomNavIndexProvider);
     // Watch the auth state for loading
     final authState = ref.watch(authViewModelProvider);
     final isLoading =
@@ -52,9 +54,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {
-              ref.read(authViewModelProvider.notifier).logout();
-            },
+            onPressed: isLoading ? null : _showLogoutDialog,
             icon: const Icon(Icons.logout),
           ),
         ],
@@ -69,9 +69,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
         onTap: (value) {
-          setState(() {
-            selectedIndex = value;
-          });
+          ref.read(bottomNavIndexProvider.notifier).state = value;
         },
         items: [
           BottomNavigationBarItem(
@@ -103,6 +101,34 @@ class _HomePageState extends ConsumerState<HomePage> {
                       : Palette.inactiveBottomBarItemColor,
             ),
             label: uploadSong,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// confrim logout dialog
+  void _showLogoutDialog() {
+    showAppDialog<void>(
+      context,
+      AppDialog(
+        imagePosition: ImagePosition.aboveText,
+        image: Image.asset(MediaRes.logOut, height: 140),
+        title: 'Log out',
+        subtitle: 'Are you sure you want to log out of your account?',
+        buttons: [
+          AppDialogButton.no(
+            text: 'Cancel',
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          AppDialogButton.yes(
+            text: 'Log out',
+            onTap: () {
+              Navigator.pop(context);
+              ref.read(authViewModelProvider.notifier).logout();
+            },
           ),
         ],
       ),

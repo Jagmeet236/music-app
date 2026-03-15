@@ -25,12 +25,14 @@ class _MusicPlayerState extends ConsumerState<MusicPlayer> {
   @override
   Widget build(BuildContext context) {
     final currentSongState = ref.watch(currentSongNotifierProvider);
+    final songNotifier = ref.read(currentSongNotifierProvider.notifier);
 
     if (currentSongState.song == null) {
       return const SizedBox();
     }
 
     final song = currentSongState.song!;
+    final isPlaying = currentSongState.isPlaying;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
@@ -113,41 +115,69 @@ class _MusicPlayerState extends ConsumerState<MusicPlayer> {
                     ],
                   ),
                   const SizedBox(height: 15),
-                  Column(
-                    children: [
-                      SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: Palette.gradient3,
-                          inactiveTrackColor: Palette.greyColor,
-                          thumbColor: Palette.whiteColor,
-                          overlayShape: SliderComponentShape.noOverlay,
-                          trackHeight: 4,
-                          thumbShape: const RoundSliderThumbShape(
-                            enabledThumbRadius: 8,
+                  // Live progress slider + time labels driven by positionStream
+                  StreamBuilder<Duration>(
+                    stream: songNotifier.audioPlayer?.positionStream,
+                    builder: (context, snapshot) {
+                      final position = snapshot.data ?? Duration.zero;
+                      final duration =
+                          songNotifier.audioPlayer?.duration ?? Duration.zero;
+                      final durationMs = duration.inMilliseconds;
+                      final sliderValue = durationMs == 0
+                          ? 0.0
+                          : (position.inMilliseconds / durationMs).clamp(
+                              0.0,
+                              1.0,
+                            );
+
+                      return Column(
+                        children: [
+                          SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              activeTrackColor: Palette.gradient3,
+                              inactiveTrackColor: Palette.greyColor,
+                              thumbColor: Palette.whiteColor,
+                              overlayShape: SliderComponentShape.noOverlay,
+                              trackHeight: 4,
+                              thumbShape: const RoundSliderThumbShape(
+                                enabledThumbRadius: 8,
+                              ),
+                            ),
+                            child: Slider(
+                              value: sliderValue,
+                              onChanged: durationMs == 0
+                                  ? null
+                                  : (value) {
+                                      final seekPosition = Duration(
+                                        milliseconds:
+                                            (value * durationMs).round(),
+                                      );
+                                      songNotifier.seekTo(seekPosition);
+                                    },
+                            ),
                           ),
-                        ),
-                        child: Slider(value: 0.1, onChanged: (value) {}),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        '0:00',
-                        style: context.textTheme.titleSmall?.copyWith(
-                          color: Palette.subtitleText,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        '0:10',
-                        style: context.textTheme.titleSmall?.copyWith(
-                          color: Palette.subtitleText,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                    ],
+                          Row(
+                            children: [
+                              Text(
+                                _formatDuration(position),
+                                style: context.textTheme.titleSmall?.copyWith(
+                                  color: Palette.subtitleText,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                _formatDuration(duration),
+                                style: context.textTheme.titleSmall?.copyWith(
+                                  color: Palette.subtitleText,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   const SizedBox(height: 15),
                   Row(
@@ -168,9 +198,11 @@ class _MusicPlayerState extends ConsumerState<MusicPlayer> {
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          CupertinoIcons.play_circle_fill,
+                        onPressed: () async => songNotifier.playPause(),
+                        icon: Icon(
+                          isPlaying
+                              ? CupertinoIcons.pause_circle_fill
+                              : CupertinoIcons.play_circle_fill,
                           color: Palette.whiteColor,
                           size: 80,
                         ),
@@ -218,5 +250,12 @@ class _MusicPlayerState extends ConsumerState<MusicPlayer> {
         ),
       ),
     );
+  }
+
+  /// Formats a [Duration] into a `m:ss` string (e.g. 3:07).
+  String _formatDuration(Duration d) {
+    final minutes = d.inMinutes;
+    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
   }
 }

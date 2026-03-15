@@ -83,7 +83,7 @@ class HomeViewModel extends _$HomeViewModel {
       token: token,
     );
 
-    response.fold(
+    await response.fold(
       (failure) {
         state = AsyncValue.error(failure.message, StackTrace.current);
       },

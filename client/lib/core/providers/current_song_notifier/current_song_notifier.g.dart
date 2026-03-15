@@ -7,7 +7,7 @@ part of 'current_song_notifier.dart';
 // **************************************************************************
 
 String _$currentSongNotifierHash() =>
-    r'bdffb6c9e20fbce9518751a8d4d56921ca5dacf9';
+    r'0f20a799c46ae0aff596aa2f09418e52ad86d299';
 
 /// Manages the audio playback and current song state in the app.
 ///

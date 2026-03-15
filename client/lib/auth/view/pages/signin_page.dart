@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:client/auth/data/models/auth_action.dart';
 import 'package:client/auth/view/pages/signup_page.dart';
 import 'package:client/auth/view/widgets/auth_gradient_btn.dart';

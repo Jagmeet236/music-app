@@ -7,6 +7,7 @@ import 'package:client/auth/data/models/auth_state.dart';
 import 'package:client/auth/data/models/user_model.dart';
 import 'package:client/auth/data/repositories/auth_repository_impl.dart';
 import 'package:client/auth/domain/repositories/auth_repository.dart';
+import 'package:client/core/providers/current_song_notifier/current_song_notifier.dart';
 import 'package:client/core/providers/current_user_notifier/current_user_notifier.dart';
 import 'package:fpdart/fpdart.dart' show Left, Right;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -122,6 +123,9 @@ class AuthViewModel extends _$AuthViewModel {
   /// Logs out the current user and clears authentication state.
   Future<void> logout() async {
     state = state.copyWith(isLoading: true, lastAction: AuthAction.logout);
+
+    // Stop any playing audio before clearing session
+    await ref.read(currentSongNotifierProvider.notifier).stopAndClear();
 
     await _authRepository.logout();
     _currentUserNotifier.user = null;
