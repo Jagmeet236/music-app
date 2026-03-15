@@ -159,20 +159,34 @@ class MusicSlab extends ConsumerWidget {
     );
   }
 
-  /// Navigates to the music player screen.
+  /// Navigates to the music player screen with 
+  /// a smooth slide-up + fade animation.
   void navigateToMusicPlayer(BuildContext context) {
     Navigator.of(context).push(
       PageRouteBuilder<dynamic>(
+        transitionDuration: const Duration(milliseconds: 350),
+        reverseTransitionDuration: const Duration(milliseconds: 300),
         pageBuilder: (context, animation, secondaryAnimation) {
           return const MusicPlayer();
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          final tween = Tween(
+          // Slide up with a smooth cubic ease
+          final slideTween = Tween(
             begin: const Offset(0, 1),
             end: Offset.zero,
-          ).chain(CurveTween(curve: Curves.easeIn));
-          final offSetAnimation = animation.drive(tween);
-          return SlideTransition(position: offSetAnimation, child: child);
+          ).chain(CurveTween(curve: Curves.easeInOutCubic));
+
+          // Subtle fade-in layered on top of the slide
+          final fadeTween = Tween<double>(begin: 0, end: 1)
+              .chain(CurveTween(curve: Curves.easeIn));
+
+          return FadeTransition(
+            opacity: animation.drive(fadeTween),
+            child: SlideTransition(
+              position: animation.drive(slideTween),
+              child: child,
+            ),
+          );
         },
       ),
     );

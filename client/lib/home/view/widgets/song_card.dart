@@ -3,65 +3,56 @@ import 'package:client/home/data/models/song_model.dart';
 import 'package:client/home/view/widgets/song_thumbnail.dart';
 import 'package:flutter/material.dart';
 
-/// A modern neumorphic-style song card that displays a song thumbnail,
-/// title, and artist with soft shadows for depth.
+/// A modern flat-style song card with a subtle white border
+/// and clean dark surface. No elevation or shadows are used.
 class SongCard extends StatelessWidget {
-  /// Constructs a [SongCard] with the provided [SongModel] data.
+  /// Creates a [SongCard] widget.
   const SongCard({required this.song, super.key});
 
-  /// The song information including name, artist, and thumbnail URL.
+  /// Song data
   final SongModel song;
 
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeOutBack,
-      tween: Tween(begin: 0.95, end: 1),
-      builder:
-          (context, scale, child) =>
-              Transform.scale(scale: scale, child: child),
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.easeOutCubic,
+      tween: Tween(begin: 0.96, end: 1),
+      builder: (context, scale, child) {
+        return Transform.scale(scale: scale, child: child);
+      },
       child: Container(
         width: 180,
         height: 260,
         decoration: BoxDecoration(
           color: Palette.cardColor,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: const [
-            // Top-left light shadow
-            BoxShadow(
-              color: Color.fromRGBO(255, 255, 255, 0.05),
-              offset: Offset(-4, -4),
-              blurRadius: 6,
-            ),
-            // Bottom-right dark shadow
-            BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.6),
-              offset: Offset(4, 4),
-              blurRadius: 6,
-            ),
-          ],
+
+          /// Clean white border
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.12),
+            width: 1.3,
+          ),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Song thumbnail image
+              /// Song Thumbnail
               SongThumbnail(
                 imageUrl: song.thumbnailUrl,
                 height: 180,
-
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(20),
                 ),
               ),
 
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
 
-              // Song name
+              /// Song Title
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Text(
                   song.songName ?? '',
                   maxLines: 1,
@@ -73,12 +64,11 @@ class SongCard extends StatelessWidget {
                 ),
               ),
 
-              // Artist name
+              const SizedBox(height: 4),
+
+              /// Artist Name
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 2,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Text(
                   song.artist ?? '',
                   maxLines: 1,

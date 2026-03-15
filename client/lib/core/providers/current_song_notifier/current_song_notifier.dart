@@ -79,6 +79,18 @@ class CurrentSongNotifier extends _$CurrentSongNotifier {
     _audioPlayer?.seek(position);
   }
 
+  /// Stops playback, disposes the player, and clears the current song state.
+  /// Called on logout so no audio bleeds through after sign-out.
+  Future<void> stopAndClear() async {
+    try {
+      await _audioPlayer?.stop();
+    } on Exception catch (e) {
+      debugPrint('❌ Error stopping AudioPlayer: $e');
+    }
+    await _disposePlayer();
+    state = const CurrentSongState(); // reset to empty
+  }
+
   /// Dispose player and subscription
   Future<void> _disposePlayer() async {
     try {

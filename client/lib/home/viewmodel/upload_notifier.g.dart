@@ -1,28 +1,28 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_viewmodel.dart';
+part of 'upload_notifier.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authViewModelHash() => r'aab9f039e9562bff5b3b60fe0403c8236306115a';
+String _$uploadNotifierHash() => r'12296b2965e6930163761de90643464777e36ae3';
 
-/// Manages authentication state and operations using [AuthRepository].
+/// Manages background song upload without blocking the UI.
 ///
-/// Copied from [AuthViewModel].
-@ProviderFor(AuthViewModel)
-final authViewModelProvider =
-    AutoDisposeNotifierProvider<AuthViewModel, AuthState>.internal(
-  AuthViewModel.new,
-  name: r'authViewModelProvider',
+/// Copied from [UploadNotifier].
+@ProviderFor(UploadNotifier)
+final uploadNotifierProvider =
+    NotifierProvider<UploadNotifier, UploadState>.internal(
+  UploadNotifier.new,
+  name: r'uploadNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$authViewModelHash,
+      : _$uploadNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$AuthViewModel = AutoDisposeNotifier<AuthState>;
+typedef _$UploadNotifier = Notifier<UploadState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

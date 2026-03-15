@@ -13,11 +13,15 @@ class SongThumbnail extends StatelessWidget {
     this.fit = BoxFit.cover,
     this.borderRadius,
   });
-
+ /// The URL of the image to display
   final String? imageUrl;
+  /// The width of the image
   final double width;
+  /// The height of the image
   final double? height;
+  /// The fit of the image
   final BoxFit fit;
+  /// The border radius of the image
   final BorderRadius? borderRadius;
 
   @override
@@ -43,7 +47,8 @@ class SongThumbnail extends StatelessWidget {
               height: height,
               fit: fit,
               gaplessPlayback: true,
-              // Avoid cacheHeight to prevent GL mipmap crash in Android emulator
+              // Avoid cacheHeight to prevent GL mipmap 
+              //crash in Android emulator
               errorBuilder: (_, __, ___) => _fallbackThumbnail(),
             );
 
