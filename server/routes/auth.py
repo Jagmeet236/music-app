@@ -10,7 +10,13 @@ from fastapi import APIRouter
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 import jwt;
+import time
+from models.otp import OTP
+from utils.otp_helper import generate_otp
+from utils.email_service import send_otp_email
 
+from pydantic_schemas.send_otp import SendOTP
+from pydantic_schemas.verify_otp import VerifyOTP
 from pydantic_schemas.user_login import UserLogin
 router = APIRouter()
 load_dotenv()
@@ -70,3 +76,69 @@ def current_user_data(db: Session = Depends(get_db),
     return db_user
     
 
+@router.post("/send-otp")
+async def send_otp(data: SendOTP, db: Session = Depends(get_db)):
+
+    email = data.email
+
+    # generate otp
+    otp = generate_otp()
+
+    # otp expires in 5 minutes
+    expiry_time = int(time.time()) + 300
+
+    # save or update otp in database
+    otp_entry = OTP(
+        email=email,
+        otp=otp,
+        expires_at=expiry_time
+    )
+
+    db.merge(otp_entry)
+    db.commit()
+
+    # send otp email
+    await send_otp_email(email, otp)
+
+    return {"message": "OTP sent successfully"}
+
+
+
+
+@router.post("/verify-otp")
+def verify_otp(data: VerifyOTP, db: Session = Depends(get_db)):
+    
+    # Extract email and otp sent by client 
+    email = data.email
+    otp = data.otp
+
+    # Fetch OTP record for the email from database
+    otp_entry = db.query(OTP).filter(OTP.email == email).first()
+
+    # If user never requested an OTP
+    if not otp_entry:
+        raise HTTPException(status_code=400, detail="OTP not requested")
+
+    # Check if OTP has expired
+    # expires_at stores the unix timestamp when the OTP becomes invalid
+    if otp_entry.expires_at < int(time.time()):
+        raise HTTPException(status_code=400, detail="OTP expired")
+
+    # Compare user entered OTP with stored OTP
+    if otp_entry.otp != otp:
+        raise HTTPException(status_code=400, detail="Invalid OTP")
+
+    # Fetch user from database using email
+    user_db = db.query(User).filter(User.email == email).first()
+
+    # If user does not exist in database
+    if not user_db:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Generate JWT token for authenticated user
+    # Token contains user id and will be used for authenticated requests
+    token = jwt.encode({"id": user_db.id}, secret_key)
+
+    # Return token and user data to the client
+    # Client will store the token and send it in future API requests
+    return {"token": token, "user": user_db}
