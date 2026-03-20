@@ -3,6 +3,7 @@ import 'package:client/auth/data/datasources/local/auth_local_datasource_impl.da
 
 import 'package:client/auth/data/datasources/remote/auth_remote_datasource.dart';
 import 'package:client/auth/data/datasources/remote/auth_remote_datasource_impl.dart';
+import 'package:client/auth/data/models/send_otp_response_model.dart';
 import 'package:client/auth/data/models/user_model.dart';
 import 'package:client/auth/domain/repositories/auth_repository.dart';
 import 'package:client/core/error/failure.dart';
@@ -82,5 +83,13 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> logout() async {
     await _local.init();
     _local.clearToken();
+  }
+
+  // ✉️ OTP = Remote only
+  @override
+  ResultFuture<SendOtpResponseModel> sendOtp({
+    required String email,
+  }) {
+    return _remote.sendOtp(email: email);
   }
 }

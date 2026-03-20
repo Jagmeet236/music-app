@@ -1,3 +1,4 @@
+import 'package:client/auth/data/models/send_otp_response_model.dart';
 import 'package:client/auth/data/models/user_model.dart';
 import 'package:client/core/utils/typedef.dart';
 
@@ -25,4 +26,9 @@ abstract class AuthRepository {
 
   /// log out the user and  clear any store user data
   Future<void> logout();
+
+  /// Sends an OTP to the provided [email].
+  ResultFuture<SendOtpResponseModel> sendOtp({
+    required String email,
+  });
 }

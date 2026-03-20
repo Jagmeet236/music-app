@@ -1,12 +1,15 @@
 import 'package:client/auth/data/models/auth_action.dart';
+import 'package:client/auth/view/pages/forgot_password_page.dart';
 import 'package:client/auth/view/pages/signup_page.dart';
 import 'package:client/auth/view/widgets/auth_gradient_btn.dart';
 import 'package:client/auth/viewmodel/auth_viewmodel.dart';
 import 'package:client/core/constants/strings.dart';
 import 'package:client/core/extensions/app_context.dart';
 import 'package:client/core/theme/app_palette.dart';
+import 'package:client/core/utils/animation_util.dart';
 import 'package:client/core/utils/auth_listener_util.dart';
 import 'package:client/core/utils/custom_snack_bar.dart';
+import 'package:client/core/utils/navigation_util.dart';
 import 'package:client/core/widgets/custom_text_btn.dart';
 import 'package:client/core/widgets/custom_text_field.dart';
 import 'package:client/core/widgets/loader.dart';
@@ -27,6 +30,7 @@ class _SigninPageState extends ConsumerState<SigninPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+
   @override
   void dispose() {
     emailController.dispose();
@@ -83,6 +87,15 @@ class _SigninPageState extends ConsumerState<SigninPage> {
                   hintText: 'Password',
                   obscureText: true,
                 ),
+                SizedBox(height: context.height * 0.015),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: CustomTextBtn(
+                    text: 'Forgot Password ?',
+
+                    onTap: navigateToForgotPasswordPage,
+                  ),
+                ),
                 sizedBox,
                 if (isLoading)
                   const Loader()
@@ -128,16 +141,27 @@ class _SigninPageState extends ConsumerState<SigninPage> {
     );
   }
 
+  void navigateToForgotPasswordPage() {
+    NavigationUtil.push<dynamic>(
+      context,
+      const ForgotPasswordPage(),
+      transitionBuilder: AnimationUtil.slide(intensity: 1.5),
+    );
+  }
+
   void navigateToSignUpPage() {
-    Navigator.of(context).push(
-      MaterialPageRoute<dynamic>(builder: (context) => const SignupPage()),
+    NavigationUtil.pushReplacement<dynamic, dynamic>(
+      context,
+      const SignupPage(),
+      transitionBuilder: AnimationUtil.slide(intensity: 1.5),
     );
   }
 
   void navigateToHomePage() {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<dynamic>(builder: (context) => const HomePage()),
-      (_) => false,
+    NavigationUtil.pushAndRemoveUntil<dynamic>(
+      context,
+      const HomePage(),
+      transitionBuilder: AnimationUtil.slide(bounce: false),
     );
   }
 }

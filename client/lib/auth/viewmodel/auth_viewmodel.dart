@@ -140,6 +140,27 @@ class AuthViewModel extends _$AuthViewModel {
     log('Logout completed');
   }
 
+  /// Sends an OTP to the given email address.
+  Future<void> sendOtp({required String email}) async {
+    state = state.copyWith(isLoading: true, lastAction: AuthAction.sendOtp);
+
+    final result = await _authRepository.sendOtp(email: email);
+
+    switch (result) {
+      case Left(value: final failure):
+        state = state.copyWith(isLoading: false, errorMessage: failure.message);
+
+      case Right():
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: null,
+          lastAction: AuthAction.sendOtp,
+        );
+    }
+
+    log('Send OTP completed');
+  }
+
   /// Resets the last authentication action and error message.
   void clearAction() {
     state = AuthState(

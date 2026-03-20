@@ -11,4 +11,7 @@ enum AuthAction {
 
   /// Action to get the current user data
   getCurrentUser,
+
+  /// Action to send an OTP
+  sendOtp,
 }
