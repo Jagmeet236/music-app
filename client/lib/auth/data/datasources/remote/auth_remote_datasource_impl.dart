@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:client/auth/data/datasources/remote/auth_remote_datasource.dart';
+import 'package:client/auth/data/models/send_otp_response_model.dart';
 import 'package:client/auth/data/models/user_model.dart';
 import 'package:client/core/constants/server_constant.dart';
 import 'package:client/core/error/api_error_type.dart';
@@ -131,6 +132,44 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         return Right(
           UserModel.fromJson(decoded).copyWith(token: token),
         );
+      }
+
+      final message =
+          decoded['message']?.toString() ??
+          decoded['detail']?.toString() ??
+          'Unknown error';
+
+      return Left(AppFailure(message));
+    } on TimeoutException {
+      return Left(AppFailure(ApiErrorType.timeout.message));
+    } on Exception catch (e) {
+      return Left(AppFailure('Unexpected error: $e'));
+    }
+  }
+
+  @override
+  ResultFuture<SendOtpResponseModel> sendOtp({
+    required String email,
+  }) async {
+    log('Sending OTP to: $email');
+
+    try {
+      final response = await _apiService.request(
+        url: '${ServerConstant.serverUrl}/auth/send-otp',
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+
+      final decoded = jsonDecode(response.body) as DataMap;
+
+      if (response.statusCode == 200) {
+        final model = SendOtpResponseModel.fromJson(decoded);
+        if (model.success) {
+          return Right(model);
+        } else {
+          return Left(AppFailure(model.message));
+        }
       }
 
       final message =

@@ -41,4 +41,7 @@ class MediaRes {
 
   /// Image asset: logOut.png';
   static const String logOut = '$_baseUrl/log_out_logo.png';
+
+  /// Image asset: app_logo_gradient.png';
+  static const String appLogoGradient = '$_baseUrl/app_logo_gradient.png';
 }

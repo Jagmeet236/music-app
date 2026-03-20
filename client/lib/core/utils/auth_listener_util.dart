@@ -169,4 +169,24 @@ class AuthListenerUtil {
       ),
     );
   }
+
+  /// Convenience method for sending OTP
+  static void listenForSendOtp(
+    WidgetRef ref,
+    BuildContext context,
+    VoidCallback navigateToVerify, {
+    String? customSuccessMessage,
+    void Function(String errorMessage)? onError,
+  }) {
+    listenForAction(
+      ref,
+      context,
+      AuthListenerConfig(
+        action: AuthAction.sendOtp,
+        onSuccess: navigateToVerify,
+        successMessage: customSuccessMessage ?? 'OTP sent successfully!',
+        onError: onError,
+      ),
+    );
+  }
 }

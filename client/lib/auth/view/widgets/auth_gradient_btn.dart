@@ -36,7 +36,7 @@ class _AuthGradientBtnState extends State<AuthGradientBtn> {
       child: ElevatedButton(
         onPressed: widget.onTap,
         style: ElevatedButton.styleFrom(
-          fixedSize: const Size(395, 55),
+          fixedSize: Size(context.width, 55),
           backgroundColor: Palette.transparentColor,
           shadowColor: Palette.transparentColor,
         ),

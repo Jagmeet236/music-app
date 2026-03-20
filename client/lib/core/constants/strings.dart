@@ -19,6 +19,11 @@ const dontHaveAnAccount = "Don't have an account?";
 /// forgot password text
 const textForgotPassword = 'Forgot Password?';
 
+/// forgot password body text
+const forgotPasswordBodyText =
+    'Enter the email associate with '
+    'your account. We will send a verification code to reset your password.';
+
 /// android local server URL
 const kAndroid = 'http://10.0.2.2:8000';
 

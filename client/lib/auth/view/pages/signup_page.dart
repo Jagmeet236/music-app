@@ -5,8 +5,10 @@ import 'package:client/auth/viewmodel/auth_viewmodel.dart';
 import 'package:client/core/constants/strings.dart';
 import 'package:client/core/extensions/app_context.dart';
 import 'package:client/core/theme/app_palette.dart';
+import 'package:client/core/utils/animation_util.dart';
 import 'package:client/core/utils/auth_listener_util.dart';
 import 'package:client/core/utils/custom_snack_bar.dart';
+import 'package:client/core/utils/navigation_util.dart';
 import 'package:client/core/widgets/custom_text_btn.dart';
 import 'package:client/core/widgets/custom_text_field.dart';
 import 'package:client/core/widgets/loader.dart';
@@ -133,8 +135,10 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   }
 
   void navigateToSignInPage() {
-    Navigator.of(context).push(
-      MaterialPageRoute<dynamic>(builder: (context) => const SigninPage()),
+    NavigationUtil.pushReplacement<dynamic, dynamic>(
+      context,
+      const SigninPage(),
+      transitionBuilder: AnimationUtil.slide(intensity: 1.5),
     );
   }
 }
