@@ -51,19 +51,20 @@ class AuthListenerUtil {
     AuthListenerConfig config,
   ) {
     ref.listen(authViewModelProvider, (prev, next) {
+      // ✅ ADD THIS LINE HERE
+      if (!context.mounted) return;
+
       // Only react if the last action matches the one we're listening for
       if (next.lastAction == config.action) {
         if (next.isLoading) {
           config.onLoading?.call();
         } else if (next.errorMessage != null) {
-          // Handle error
           final errorMsg = config.customErrorMessage ?? next.errorMessage!;
           if (config.showDefaultErrorMessage) {
             showSnackBar(context, errorMsg);
           }
           config.onError?.call(errorMsg);
         } else {
-          // Handle success (no error and not loading)
           if (config.successMessage != null) {
             showSnackBar(context, config.successMessage!);
           }
@@ -80,6 +81,7 @@ class AuthListenerUtil {
     List<AuthListenerConfig> configs,
   ) {
     ref.listen(authViewModelProvider, (prev, next) {
+      if (!context.mounted) return;
       // Find the config that matches the current action
       final matchingConfig = configs.firstWhere(
         (config) => config.action == next.lastAction,
@@ -185,6 +187,26 @@ class AuthListenerUtil {
         action: AuthAction.sendOtp,
         onSuccess: navigateToVerify,
         successMessage: customSuccessMessage ?? 'OTP sent successfully!',
+        onError: onError,
+      ),
+    );
+  }
+
+  /// Convenience method for verifying OTP
+  static void listenForVerifyOtp(
+    WidgetRef ref,
+    BuildContext context,
+    VoidCallback onSuccess, {
+    String? customSuccessMessage,
+    void Function(String errorMessage)? onError,
+  }) {
+    listenForAction(
+      ref,
+      context,
+      AuthListenerConfig(
+        action: AuthAction.verifyOtp,
+        onSuccess: onSuccess,
+        successMessage: customSuccessMessage,
         onError: onError,
       ),
     );

@@ -79,14 +79,14 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   ),
                 ),
                 sizedBox,
-                CustomTextField(controller: nameController, hintText: 'Name'),
+                CustomTextField(controller: nameController, hintText: nameHint),
                 SizedBox(height: context.height * 0.015),
-                CustomTextField(controller: emailController, hintText: 'Email'),
+                CustomTextField(controller: emailController, hintText: emailHint),
                 SizedBox(height: context.height * 0.015),
                 CustomTextField(
                   controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
+                  hintText: passwordHint,
+                  isPassword: true,
                 ),
                 sizedBox,
                 if (isLoading)
@@ -103,7 +103,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                               password: passwordController.text,
                             );
                       } else {
-                        showSnackBar(context, 'Please fill in all fields');
+                        showSnackBar(context, errPleaseFillAllFields);
                       }
                     },
                     buttonText: textSignUp,

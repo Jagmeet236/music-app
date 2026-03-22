@@ -80,19 +80,18 @@ class _SigninPageState extends ConsumerState<SigninPage> {
                   ),
                 ),
                 sizedBox,
-                CustomTextField(controller: emailController, hintText: 'Email'),
+                CustomTextField(controller: emailController, hintText: emailHint),
                 SizedBox(height: context.height * 0.015),
                 CustomTextField(
                   controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
+                  hintText: passwordHint,
+                  isPassword: true,
                 ),
                 SizedBox(height: context.height * 0.015),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: CustomTextBtn(
-                    text: 'Forgot Password ?',
-
+                    text: forgotPasswordQuestion,
                     onTap: navigateToForgotPasswordPage,
                   ),
                 ),
@@ -110,7 +109,7 @@ class _SigninPageState extends ConsumerState<SigninPage> {
                               password: passwordController.text,
                             );
                       } else {
-                        showSnackBar(context, 'Please fill in all fields');
+                        showSnackBar(context, errPleaseFillAllFields);
                       }
                     },
                     buttonText: textSignIn,

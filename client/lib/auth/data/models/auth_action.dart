@@ -14,4 +14,10 @@ enum AuthAction {
 
   /// Action to send an OTP
   sendOtp,
+
+  /// Action to verify an OTP
+  verifyOtp,
+
+  /// Action to reset the user's password.
+  resetPassword,
 }
