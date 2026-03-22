@@ -13,4 +13,13 @@ abstract class AuthLocalDatasource {
 
   /// Removes the stored authentication token.
   void clearToken();
+
+  /// Saves the password reset token locally.
+  void setResetToken(String? token);
+
+  /// Returns the stored password reset token.
+  String? getResetToken();
+
+  /// Removes the stored password reset token.
+  void clearResetToken();
 }

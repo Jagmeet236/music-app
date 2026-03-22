@@ -1,5 +1,7 @@
+import 'package:client/auth/data/models/reset_password_response_model.dart';
 import 'package:client/auth/data/models/send_otp_response_model.dart';
 import 'package:client/auth/data/models/user_model.dart';
+import 'package:client/auth/data/models/verify_otp_response_model.dart';
 import 'package:client/core/utils/typedef.dart';
 /// Define the contract for remote authentication operations.
 abstract class AuthRemoteDatasource {
@@ -22,5 +24,18 @@ abstract class AuthRemoteDatasource {
   /// Sends an OTP to the provided [email].
   ResultFuture<SendOtpResponseModel> sendOtp({
     required String email,
+  });
+
+  /// Verifies an OTP with the provided  /// Verifies the OTP sent to the user.
+  ResultFuture<VerifyOtpResponseModel> verifyOtp({
+    required String email,
+    required String otp,
+    required String? purpose,
+  });
+
+  /// Resets user password given a reset token and new password
+  ResultFuture<ResetPasswordResponseModel> resetPassword({
+    required String resetToken,
+    required String newPassword,
   });
 }

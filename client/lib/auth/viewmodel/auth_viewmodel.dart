@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_redundant_argument_values
+
 
 import 'dart:developer';
 
@@ -9,6 +9,8 @@ import 'package:client/auth/data/repositories/auth_repository_impl.dart';
 import 'package:client/auth/domain/repositories/auth_repository.dart';
 import 'package:client/core/providers/current_song_notifier/current_song_notifier.dart';
 import 'package:client/core/providers/current_user_notifier/current_user_notifier.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart' show Left, Right;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -55,12 +57,13 @@ class AuthViewModel extends _$AuthViewModel {
         state = state.copyWith(
           isLoading: false,
           user: user,
-          errorMessage: null,
           lastAction: AuthAction.signUp,
         );
     }
 
-    log('SignUp completed');
+    if (kDebugMode) {
+      log('SignUp completed');
+    }
   }
 
   /// Authenticates a user and updates the authentication state.
@@ -78,7 +81,6 @@ class AuthViewModel extends _$AuthViewModel {
           user: state.user,
           isLoading: false,
           errorMessage: failure.message,
-          lastAction: null,
         );
 
       case Right(value: final user):
@@ -87,12 +89,13 @@ class AuthViewModel extends _$AuthViewModel {
         state = state.copyWith(
           isLoading: false,
           user: user,
-          errorMessage: null,
           lastAction: AuthAction.login,
         );
     }
 
-    log('Login completed');
+    if (kDebugMode) {
+      log('Login completed');
+    }
   }
 
   /// Fetches the currently authenticated user.
@@ -114,7 +117,6 @@ class AuthViewModel extends _$AuthViewModel {
         state = state.copyWith(
           isLoading: false,
           user: user,
-          errorMessage: null,
         );
         return user;
     }
@@ -131,13 +133,13 @@ class AuthViewModel extends _$AuthViewModel {
     _currentUserNotifier.user = null;
 
     state = state.copyWith(
-      user: null,
       isLoading: false,
-      errorMessage: null,
       lastAction: AuthAction.logout,
     );
 
-    log('Logout completed');
+    if (kDebugMode) {
+      log('Logout completed');
+    }
   }
 
   /// Sends an OTP to the given email address.
@@ -153,26 +155,86 @@ class AuthViewModel extends _$AuthViewModel {
       case Right():
         state = state.copyWith(
           isLoading: false,
-          errorMessage: null,
           lastAction: AuthAction.sendOtp,
         );
     }
 
-    log('Send OTP completed');
+    if (kDebugMode) {
+      log('Send OTP completed');
+    }
+  }
+
+  /// Verifies an OTP based on the given email, otp, and purpose.
+  Future<void> verifyOtp({
+    required String email,
+    required String otp,
+    required String? purpose,
+  }) async {
+    state = state.copyWith(isLoading: true, lastAction: AuthAction.verifyOtp);
+
+    final result = await _authRepository.verifyOtp(
+      email: email,
+      otp: otp,
+      purpose: purpose,
+    );
+
+    switch (result) {
+      case Left(value: final failure):
+        state = state.copyWith(isLoading: false, errorMessage: failure.message);
+
+      case Right():
+        state = state.copyWith(
+          isLoading: false,
+          lastAction: AuthAction.verifyOtp,
+        );
+    }
+
+    if (kDebugMode) {
+      log('Verify OTP completed');
+    }
+  }
+
+  /// Resets the user's password using the locally stored reset token.
+  Future<void> resetPassword({
+    required String newPassword,
+  }) async {
+    state = state.copyWith(isLoading: true, lastAction: AuthAction.resetPassword);
+
+    final result = await _authRepository.resetPassword(
+      newPassword: newPassword,
+    );
+
+    switch (result) {
+      case Left(value: final failure):
+        state = state.copyWith(isLoading: false, errorMessage: failure.message);
+
+      case Right():
+        state = state.copyWith(
+          isLoading: false,
+          lastAction: AuthAction.resetPassword,
+        );
+    }
+
+    if (kDebugMode) {
+      log('Reset Password completed');
+    }
   }
 
   /// Resets the last authentication action and error message.
   void clearAction() {
     state = AuthState(
       user: state.user,
-      isLoading: false,
-      lastAction: null,
-      errorMessage: null,
     );
   }
 
   /// Clears the current error message.
   void clearError() {
-    state = state.copyWith(errorMessage: null);
+    state = state.copyWith();
   }
 }
+
+/// Provider to store the email email being used for OTP verification.
+final authEmailProvider = StateProvider<String?>((ref) => null);
+
+/// Provider to store the purpose of the OTP (e.g. 'reset_password' or null).
+final authPurposeProvider = StateProvider<String?>((ref) => null);
