@@ -50,10 +50,7 @@ class AuthLayoutWrapper extends StatelessWidget {
         ),
         SizedBox(height: screenHeight * 0.02),
         BouncyScaleAnimation(
-          child: Image.asset(
-            MediaRes.appLogo,
-            height: screenHeight * 0.25,
-          ),
+          child: Image.asset(MediaRes.logoAuth, height: screenHeight * 0.25),
         ),
         SizedBox(height: screenHeight * 0.03),
         child,

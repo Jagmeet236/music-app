@@ -61,8 +61,14 @@ class _SongsPageState extends ConsumerState<SongsPage> {
                 ),
               );
             },
-            error: (error, _) => Center(child: Text(error.toString())),
-            loading: () => const Loader(),
+            error: (error, _) => SizedBox(
+              height: 270,
+              child: Center(child: Text(error.toString())),
+            ),
+            loading: () => const SizedBox(
+              height: 270,
+              child: Center(child: Loader()),
+            ),
           ),
         ],
       ),

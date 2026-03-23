@@ -80,7 +80,10 @@ class _SigninPageState extends ConsumerState<SigninPage> {
                   ),
                 ),
                 sizedBox,
-                CustomTextField(controller: emailController, hintText: emailHint),
+                CustomTextField(
+                  controller: emailController,
+                  hintText: emailHint,
+                ),
                 SizedBox(height: context.height * 0.015),
                 CustomTextField(
                   controller: passwordController,
