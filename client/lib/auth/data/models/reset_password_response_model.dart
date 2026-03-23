@@ -1,5 +1,5 @@
-import 'package:client/core/utils/typedef.dart';
 import 'package:client/core/constants/strings.dart';
+import 'package:client/core/utils/typedef.dart';
 
 /// The response model for the reset password API.
 class ResetPasswordResponseModel {

@@ -81,7 +81,10 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                 sizedBox,
                 CustomTextField(controller: nameController, hintText: nameHint),
                 SizedBox(height: context.height * 0.015),
-                CustomTextField(controller: emailController, hintText: emailHint),
+                CustomTextField(
+                  controller: emailController,
+                  hintText: emailHint,
+                ),
                 SizedBox(height: context.height * 0.015),
                 CustomTextField(
                   controller: passwordController,
