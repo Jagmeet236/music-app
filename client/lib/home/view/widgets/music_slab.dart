@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:client/core/extensions/app_context.dart';
 import 'package:client/core/providers/current_song_notifier/current_song_notifier.dart';
 import 'package:client/core/theme/app_palette.dart';
-import 'package:client/core/utils/color_util.dart';
 import 'package:client/home/view/widgets/music_player.dart';
 import 'package:client/home/view/widgets/song_thumbnail.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,10 +25,6 @@ class MusicSlab extends ConsumerWidget {
 
     final song = currentSongState.song!;
     final isPlaying = currentSongState.isPlaying;
-    final songColor =
-        (song.hexCode != null && song.hexCode!.length == 6)
-            ? hexToColor(song.hexCode!)
-            : Palette.cardColor;
 
     return GestureDetector(
       onTap: () => navigateToMusicPlayer(context),
@@ -38,11 +33,11 @@ class MusicSlab extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Container(
-              height: 86,
+              height: 70,
               width: context.width - 16,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: songColor,
+                color: Colors.blueGrey,
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Row(
@@ -55,7 +50,7 @@ class MusicSlab extends ConsumerWidget {
                         child: SongThumbnail(
                           imageUrl: song.thumbnailUrl,
                           width: context.width * .14,
-                          height: context.height * .2,
+                          height: context.height * .09,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -66,14 +61,14 @@ class MusicSlab extends ConsumerWidget {
                         children: [
                           Text(
                             song.songName ?? 'N/A',
-                            style: context.textTheme.titleLarge?.copyWith(
+                            style: context.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w500,
                               color: Palette.whiteColor,
                             ),
                           ),
                           Text(
                             song.artist ?? 'N/A',
-                            style: context.textTheme.titleMedium?.copyWith(
+                            style: context.textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w500,
                               color: Palette.subtitleText,
                             ),
@@ -159,13 +154,12 @@ class MusicSlab extends ConsumerWidget {
     );
   }
 
-  /// Navigates to the music player screen with 
+  /// Navigates to the music player screen with
   /// a smooth slide-up + fade animation.
   void navigateToMusicPlayer(BuildContext context) {
     Navigator.of(context).push(
       PageRouteBuilder<dynamic>(
         transitionDuration: const Duration(milliseconds: 350),
-        reverseTransitionDuration: const Duration(milliseconds: 300),
         pageBuilder: (context, animation, secondaryAnimation) {
           return const MusicPlayer();
         },
@@ -177,8 +171,10 @@ class MusicSlab extends ConsumerWidget {
           ).chain(CurveTween(curve: Curves.easeInOutCubic));
 
           // Subtle fade-in layered on top of the slide
-          final fadeTween = Tween<double>(begin: 0, end: 1)
-              .chain(CurveTween(curve: Curves.easeIn));
+          final fadeTween = Tween<double>(
+            begin: 0,
+            end: 1,
+          ).chain(CurveTween(curve: Curves.easeIn));
 
           return FadeTransition(
             opacity: animation.drive(fadeTween),

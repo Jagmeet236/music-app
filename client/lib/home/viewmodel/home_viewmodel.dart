@@ -39,8 +39,6 @@ class HomeViewModel extends _$HomeViewModel {
 
   /// Manually refresh songs
   Future<void> fetchSongs() async {
-    state = const AsyncValue.loading();
-
     state = await AsyncValue.guard(() async {
       final token = ref.read(currentUserNotifierProvider)?.token ?? '';
 

@@ -18,7 +18,8 @@ Future<String> splashViewModel(SplashViewModelRef ref) async {
   stopwatch.stop();
   final elapsedMs = stopwatch.elapsedMilliseconds;
   
-  // Ensure a minimum of 3.5 seconds passes for the bouncy animation to be enjoyed
+  // Ensure a minimum of 3.5 seconds passes for the 
+  //bouncy animation to be enjoyed
   if (elapsedMs < 3500) {
     await Future<void>.delayed(Duration(milliseconds: 3500 - elapsedMs));
   }

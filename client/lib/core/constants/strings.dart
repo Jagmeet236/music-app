@@ -140,6 +140,26 @@ const successOtpVerified = 'OTP Verified successfully!';
 /// success: password reset successful
 const successPasswordReset = 'Password reset successful. Please sign in.';
 
-
 /// hint : enter 6-digit OTP
 const hintEnterOtp = 'Enter 6-digit OTP';
+
+// ---- HOME SCREEN STRINGS ---- //
+
+/// error: could not load latest songs
+const errCouldNotLoadLatestSongs = 'Could not load latest songs.';
+
+/// recently played section title
+const recentlyPlayed = 'Recently Played';
+
+/// delete dialog title
+const deleteFromHistoryTitle = 'Delete from history?';
+
+/// delete dialog subtitle
+const deleteFromHistorySubtitle =
+    'Are you sure you want to remove this song from your recently played list?';
+
+/// cancel string
+const cancel = 'Cancel';
+
+/// delete string
+const delete = 'Delete';
