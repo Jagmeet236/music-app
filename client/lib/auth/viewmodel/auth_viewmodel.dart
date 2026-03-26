@@ -1,5 +1,3 @@
-
-
 import 'dart:developer';
 
 import 'package:client/auth/data/models/auth_action.dart';
@@ -114,10 +112,7 @@ class AuthViewModel extends _$AuthViewModel {
 
       case Right(value: final user):
         _currentUserNotifier.user = user;
-        state = state.copyWith(
-          isLoading: false,
-          user: user,
-        );
+        state = state.copyWith(isLoading: false, user: user);
         return user;
     }
   }
@@ -132,10 +127,7 @@ class AuthViewModel extends _$AuthViewModel {
     await _authRepository.logout();
     _currentUserNotifier.user = null;
 
-    state = state.copyWith(
-      isLoading: false,
-      lastAction: AuthAction.logout,
-    );
+    state = state.copyWith(isLoading: false, lastAction: AuthAction.logout);
 
     if (kDebugMode) {
       log('Logout completed');
@@ -195,10 +187,11 @@ class AuthViewModel extends _$AuthViewModel {
   }
 
   /// Resets the user's password using the locally stored reset token.
-  Future<void> resetPassword({
-    required String newPassword,
-  }) async {
-    state = state.copyWith(isLoading: true, lastAction: AuthAction.resetPassword);
+  Future<void> resetPassword({required String newPassword}) async {
+    state = state.copyWith(
+      isLoading: true,
+      lastAction: AuthAction.resetPassword,
+    );
 
     final result = await _authRepository.resetPassword(
       newPassword: newPassword,
@@ -222,9 +215,7 @@ class AuthViewModel extends _$AuthViewModel {
 
   /// Resets the last authentication action and error message.
   void clearAction() {
-    state = AuthState(
-      user: state.user,
-    );
+    state = AuthState(user: state.user);
   }
 
   /// Clears the current error message.

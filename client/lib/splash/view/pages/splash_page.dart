@@ -23,13 +23,13 @@ class _SplashPageState extends ConsumerState<SplashPage>
   late final AnimationController _animController;
   late final Animation<double> _fadeAnimation;
   late final Animation<double> _scaleAnimation;
-  
+
   String? _version;
 
   @override
   void initState() {
     super.initState();
-    
+
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -77,7 +77,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
         NavigationUtil.pushReplacement<dynamic, dynamic>(
           context,
           currentUser == null ? const SignupPage() : const HomePage(),
-          transitionBuilder: AnimationUtil.slide(bounce: true, intensity: 2.0),
+          transitionBuilder: AnimationUtil.slide(intensity: 2),
         );
       }
     });
