@@ -9,7 +9,9 @@ part of 'recently_played_local_data_source.dart';
 String _$recentlyPlayedLocalDataSourceHash() =>
     r'7c132c6aa5c622820fd6e6bb96b095040337be9e';
 
-/// See also [recentlyPlayedLocalDataSource].
+/// Provides an instance of [RecentlyPlayedLocalDataSource].
+///
+/// Copied from [recentlyPlayedLocalDataSource].
 @ProviderFor(recentlyPlayedLocalDataSource)
 final recentlyPlayedLocalDataSourceProvider =
     Provider<RecentlyPlayedLocalDataSource>.internal(

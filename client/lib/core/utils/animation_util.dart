@@ -199,5 +199,6 @@ class CustomCupertinoPageRoute<T> extends PageRouteBuilder<T> {
     Widget,
   )
   /// The custom transition builder function to be used for Android transitions.
+  // ignore: public_member_api_docs
   transitionsBuilderPlay;
 }

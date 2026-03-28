@@ -1,5 +1,5 @@
 import 'package:client/core/theme/theme.dart';
-import 'package:client/splash/view/pages/splash_page.dart';
+import 'package:client/splash/presentation/pages/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
