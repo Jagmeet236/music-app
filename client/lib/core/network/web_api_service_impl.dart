@@ -22,24 +22,29 @@ class WebApiServiceImpl implements WebApiService {
 
     switch (method.toUpperCase()) {
       case 'GET':
-        return client.get(uri, headers: headers).
-        timeout(const Duration(seconds: 10));
+        return client
+            .get(uri, headers: headers)
+            .timeout(const Duration(seconds: 10));
 
       case 'POST':
-        return client.post(uri, headers: headers, body: body)
-        .timeout(const Duration(seconds: 10));
+        return client
+            .post(uri, headers: headers, body: body)
+            .timeout(const Duration(seconds: 10));
 
       case 'PUT':
-        return client.put(uri, headers: headers, body: body)
-        .timeout(const Duration(seconds: 10));
+        return client
+            .put(uri, headers: headers, body: body)
+            .timeout(const Duration(seconds: 10));
 
       case 'PATCH':
-        return client.patch(uri, headers: headers, body: body)
-        .timeout(const Duration(seconds: 10));
+        return client
+            .patch(uri, headers: headers, body: body)
+            .timeout(const Duration(seconds: 10));
 
       case 'DELETE':
-        return client.delete(uri, headers: headers, body: body)
-        .timeout(const Duration(seconds: 10));
+        return client
+            .delete(uri, headers: headers, body: body)
+            .timeout(const Duration(seconds: 10));
 
       default:
         throw UnsupportedError('HTTP method $method is not supported.');
@@ -67,6 +72,6 @@ class WebApiServiceImpl implements WebApiService {
       request.headers.addAll(headers);
     }
 
-    return request.send().timeout(const Duration(seconds: 10));
+    return request.send().timeout(const Duration(seconds: 20));
   }
 }

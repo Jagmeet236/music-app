@@ -25,15 +25,17 @@ class HomeViewModel extends _$HomeViewModel {
     _getAllSongsUseCase = GetAllSongsUseCase(repository);
     _uploadSongUseCase = UploadSongUseCase(repository);
 
-    final token = ref.watch(
-      currentUserNotifierProvider.select((user) => user?.token),
+    // Watch auth state to trigger rebuilds on logout/login changes
+    final isAuthenticated = ref.watch(
+      currentUserNotifierProvider
+          .select((user) => user?.token?.isNotEmpty ?? false),
     );
 
-    if (token == null || token.isEmpty) {
+    if (!isAuthenticated) {
       return []; // User logged out — let auth listener handle navigation
     }
 
-    final result = await _getAllSongsUseCase(GetAllSongsParams(token: token));
+    final result = await _getAllSongsUseCase(const GetAllSongsParams());
 
     return result.fold(
       (failure) => throw Exception(failure.message),
@@ -44,13 +46,7 @@ class HomeViewModel extends _$HomeViewModel {
   /// Manually refresh songs
   Future<void> fetchSongs() async {
     state = await AsyncValue.guard(() async {
-      final token = ref.read(currentUserNotifierProvider)?.token ?? '';
-
-      if (token.isEmpty) {
-        throw Exception('User token is missing');
-      }
-
-      final result = await _getAllSongsUseCase(GetAllSongsParams(token: token));
+      final result = await _getAllSongsUseCase(const GetAllSongsParams());
 
       return result.fold(
         (failure) => throw Exception(failure.message),
@@ -67,13 +63,6 @@ class HomeViewModel extends _$HomeViewModel {
     required String artist,
     required Color selectedColor,
   }) async {
-    final token = ref.read(currentUserNotifierProvider)?.token ?? '';
-
-    if (token.isEmpty) {
-      state = AsyncValue.error('User token is missing', StackTrace.current);
-      return;
-    }
-
     state = const AsyncValue.loading();
 
     final response = await _uploadSongUseCase(UploadSongParams(
@@ -82,7 +71,6 @@ class HomeViewModel extends _$HomeViewModel {
       songName: songName,
       artist: artist,
       hexCode: rgbToHex(selectedColor),
-      token: token,
     ));
 
     await response.fold(

@@ -6,7 +6,7 @@ part of 'home_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$homeViewModelHash() => r'5b7172d3c43579ce9f47e6b1260b1b3c3070d0f7';
+String _$homeViewModelHash() => r'b93ce3098ed7ed476eae84314602b2899fa6c562';
 
 /// ViewModel responsible for handling home feature logic.
 ///

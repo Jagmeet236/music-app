@@ -7,7 +7,7 @@ part of 'home_remote_repository_impl.dart';
 // **************************************************************************
 
 String _$homeRemoteRepositoryHash() =>
-    r'975c30bf434739fb9acffbc0a7cd691f917b788e';
+    r'f40591257e16ab2827dda2ac9869cd11f3e795db';
 
 /// Provides an instance of [HomeRemoteRepository].
 /// ViewModel depends ONLY on this abstraction.

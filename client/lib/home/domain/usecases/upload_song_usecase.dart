@@ -19,7 +19,6 @@ class UploadSongUseCase implements UseCaseWithParams<String, UploadSongParams> {
         songName: params.songName,
         artist: params.artist,
         hexCode: params.hexCode,
-        token: params.token,
       );
 }
 
@@ -32,7 +31,6 @@ class UploadSongParams {
     required this.songName,
     required this.artist,
     required this.hexCode,
-    required this.token,
   });
 
   /// The audio file to upload.
@@ -49,7 +47,4 @@ class UploadSongParams {
 
   /// The selected color hex code.
   final String hexCode;
-
-  /// The user token.
-  final String token;
 }

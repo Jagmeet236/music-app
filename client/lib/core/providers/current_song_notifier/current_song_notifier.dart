@@ -8,49 +8,74 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'current_song_notifier.g.dart';
 
 @riverpod
-/// Manages the audio playback and current song state in the app.
+/// Notifier that manages the currently playing song and its audio player.
 class CurrentSongNotifier extends _$CurrentSongNotifier {
   AudioPlayer? _audioPlayer;
+  StreamSubscription<PlayerState>? _playerStateSub; // ✅ Track subscription
 
   @override
   CurrentSongState build() {
+    // ✅ Auto-dispose when provider is removed
+    ref.onDispose(() async {
+      await _cleanUp();
+    });
     return const CurrentSongState();
   }
 
-  /// ✅ Public getter so the UI can access positionStream and duration
+  /// Provides access to the current [AudioPlayer] instance, if any.
   AudioPlayer? get audioPlayer => _audioPlayer;
 
-  /// Updates the currently playing song
+  /// Updates the currently playing song, handling all audio player
+  ///  setup and state management.
   Future<void> updateSong(SongModel song) async {
-    if (state.song?.songUrl == song.songUrl) return;
+    // Skip if same song is already loaded
+    if (state.song?.songUrl == song.songUrl) {
+      // Just ensure it's playing if paused
+      if (_audioPlayer != null && !_audioPlayer!.playing) {
+        await _audioPlayer!.play();
+      }
+      return;
+    }
 
-    await _disposePlayer();
+    await _cleanUp(); // ✅ Cancel sub + dispose player before creating new one
 
     _audioPlayer = AudioPlayer();
 
-    // Update song immediately so UI reflects change
+    // Show song in UI immediately before network load
     state = state.copyWith(song: song, isPlaying: false);
 
     try {
-      final audioSource = AudioSource.uri(Uri.parse(song.songUrl!));
-      await _audioPlayer!.setAudioSource(audioSource);
+      await _audioPlayer!.setAudioSource(
+        AudioSource.uri(Uri.parse(song.songUrl!)),
+      );
 
-      /// ✅ Listen to player state and update isPlaying reactively
-      _audioPlayer!.playerStateStream.listen((playerState) {
-        final isActuallyPlaying =
-            playerState.playing &&
-            playerState.processingState == ProcessingState.ready;
+      // ✅ Store subscription so we can cancel it later
+      _playerStateSub = _audioPlayer!.playerStateStream.listen(
+        (playerState) {
+          final isActuallyPlaying =
+              playerState.playing &&
+              playerState.processingState == ProcessingState.ready;
 
-        state = state.copyWith(isPlaying: isActuallyPlaying);
+          state = state.copyWith(isPlaying: isActuallyPlaying);
 
-        if (playerState.processingState == ProcessingState.completed) {
-          _audioPlayer!.seek(Duration.zero);
-          _audioPlayer!.pause();
+          if (playerState.processingState == ProcessingState.completed) {
+            _handleSongCompletion();
+          }
+        },
+        onError: (Object e, StackTrace stack) {
+          debugPrint('❌ PlayerState stream error: $e');
           state = state.copyWith(isPlaying: false);
-        }
-      });
+        },
+      );
 
       await _audioPlayer!.play();
+    } on PlayerException catch (e) {
+      // just_audio specific exception — contains error code
+      debugPrint('❌ PlayerException [code: ${e.code}]: ${e.message}');
+      state = state.copyWith(isPlaying: false);
+    } on PlayerInterruptedException catch (e) {
+      debugPrint('❌ Playback interrupted: ${e.message}');
+      state = state.copyWith(isPlaying: false);
     } on Exception catch (e, stack) {
       debugPrint('❌ Error loading/playing audio: $e');
       if (kDebugMode) print(stack);
@@ -58,7 +83,7 @@ class CurrentSongNotifier extends _$CurrentSongNotifier {
     }
   }
 
-  /// Toggles play/pause for the current song
+  /// Toggles play/pause state of the current song.
   Future<void> playPause() async {
     if (_audioPlayer == null) return;
 
@@ -68,35 +93,38 @@ class CurrentSongNotifier extends _$CurrentSongNotifier {
       } else {
         await _audioPlayer!.play();
       }
-      // ❌ Don't set state here — let the listener handle it
     } on Exception catch (e) {
       debugPrint('❌ Error toggling playback: $e');
     }
   }
 
-  /// Seeks to a specific position in the song
+  /// Seeks to a specific position in the current song.
   void seekTo(Duration position) {
     _audioPlayer?.seek(position);
   }
 
-  /// Stops playback, disposes the player, and clears the current song state.
-  /// Called on logout so no audio bleeds through after sign-out.
+  ///
   Future<void> stopAndClear() async {
-    try {
-      await _audioPlayer?.stop();
-    } on Exception catch (e) {
-      debugPrint('❌ Error stopping AudioPlayer: $e');
-    }
-    await _disposePlayer();
-    state = const CurrentSongState(); // reset to empty
+    await _cleanUp();
+    state = const CurrentSongState();
   }
 
-  /// Dispose player and subscription
-  Future<void> _disposePlayer() async {
+  void _handleSongCompletion() {
+    _audioPlayer?.seek(Duration.zero);
+    _audioPlayer?.pause();
+    state = state.copyWith(isPlaying: false);
+  }
+
+  /// ✅ Cancel stream subscription AND dispose player safely
+  Future<void> _cleanUp() async {
+    await _playerStateSub?.cancel();
+    _playerStateSub = null;
+
     try {
+      await _audioPlayer?.stop();
       await _audioPlayer?.dispose();
     } on Exception catch (e) {
-      debugPrint('❌ Error disposing AudioPlayer: $e');
+      debugPrint('❌ Error during player cleanup: $e');
     } finally {
       _audioPlayer = null;
     }

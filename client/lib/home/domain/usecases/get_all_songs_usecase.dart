@@ -13,14 +13,11 @@ class GetAllSongsUseCase
 
   @override
   ResultFuture<List<SongModel>> call(GetAllSongsParams params) =>
-      _homeRemoteRepository.getAllSongs(token: params.token);
+      _homeRemoteRepository.getAllSongs();
 }
 
 /// Parameters for [GetAllSongsUseCase].
 class GetAllSongsParams {
   /// Creates [GetAllSongsParams].
-  const GetAllSongsParams({required this.token});
-
-  /// The user token.
-  final String token;
+  const GetAllSongsParams();
 }

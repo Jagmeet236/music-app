@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:client/core/providers/current_user_notifier/current_user_notifier.dart';
+
 import 'package:client/core/utils/color_util.dart';
 import 'package:client/home/data/repositories/home_remote_repository_impl.dart';
 import 'package:client/home/domain/usecases/upload_song_usecase.dart';
@@ -61,18 +61,7 @@ class UploadNotifier extends _$UploadNotifier {
     required Color selectedColor,
   }) async {
     log('UploadNotifier.upload called for $songName by $artist');
-    final token = ref.read(currentUserNotifierProvider)?.token ?? '';
-
-    if (token.isEmpty) {
-      log('UploadNotifier: Token is empty. Aborting.');
-      state = state.copyWith(
-        errorMessage:
-            'Not authenticated '
-            '— please  log in again.',
-      );
-      return;
-    }
-
+    
     state = const UploadState(isUploading: true);
 
     try {
@@ -86,7 +75,6 @@ class UploadNotifier extends _$UploadNotifier {
         songName: songName,
         artist: artist,
         hexCode: rgbToHex(selectedColor),
-        token: token,
       ));
 
       response.fold(
