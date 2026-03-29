@@ -9,7 +9,9 @@ part of 'recently_played_repository_impl.dart';
 String _$recentlyPlayedRepositoryHash() =>
     r'4f5b7e8a218976f1c3f463bc1feeb0cfa2cebc4b';
 
-/// See also [recentlyPlayedRepository].
+/// Provides an instance of [RecentlyPlayedRepository].
+///
+/// Copied from [recentlyPlayedRepository].
 @ProviderFor(recentlyPlayedRepository)
 final recentlyPlayedRepositoryProvider =
     Provider<RecentlyPlayedRepository>.internal(

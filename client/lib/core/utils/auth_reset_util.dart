@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:client/auth/viewmodel/auth_viewmodel.dart';
+import 'package:client/auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Utility function to clear OTP-related context from providers

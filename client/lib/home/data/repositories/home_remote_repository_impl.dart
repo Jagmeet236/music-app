@@ -1,13 +1,11 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:client/core/constants/enums/api_error_type.dart';
-import 'package:client/core/constants/server_constant.dart';
 import 'package:client/core/error/failure.dart';
-import 'package:client/core/network/web_api_service.dart';
-import 'package:client/core/network/web_api_service_provider.dart';
 import 'package:client/core/utils/typedef.dart';
+import 'package:client/home/data/datasources/local/home_local_datasource.dart';
+import 'package:client/home/data/datasources/local/home_local_datasource_impl.dart';
+import 'package:client/home/data/datasources/remote/home_remote_datasource.dart';
+import 'package:client/home/data/datasources/remote/home_remote_datasource_impl.dart';
 import 'package:client/home/data/models/song_model.dart';
 import 'package:client/home/domain/repositories/home_remote_repository/home_remote_repository.dart';
 import 'package:fpdart/fpdart.dart';
@@ -19,16 +17,20 @@ part 'home_remote_repository_impl.g.dart';
 /// ViewModel depends ONLY on this abstraction.
 @riverpod
 HomeRemoteRepository homeRemoteRepository(HomeRemoteRepositoryRef ref) {
-  final api = ref.watch(webApiServiceProvider); // ✅ watch instead of read
-  return HomeRemoteRepositoryImpl(api);
+  final remote = ref.watch(homeRemoteDatasourceProvider);
+  final local = ref.watch(homeLocalDatasourceProvider);
+  return HomeRemoteRepositoryImpl(remote, local);
 }
 
-/// Concrete implementation of [HomeRemoteRepository].
+/// Concrete implementation of [HomeRemoteRepository]
+/// that delegates logic to [HomeRemoteDatasource] & [HomeLocalDatasource].
 class HomeRemoteRepositoryImpl implements HomeRemoteRepository {
-  /// Creates a HomeRemoteRepositoryImpl with the provided [WebApiService].
-  HomeRemoteRepositoryImpl(this._api);
+  /// Creates a HomeRemoteRepositoryImpl
+  ///  with the provided [HomeRemoteDatasource] and [HomeLocalDatasource].
+  HomeRemoteRepositoryImpl(this._remote, this._local);
 
-  final WebApiService _api;
+  final HomeRemoteDatasource _remote;
+  final HomeLocalDatasource _local;
 
   @override
   ResultFuture<String> uploadSong({
@@ -37,66 +39,31 @@ class HomeRemoteRepositoryImpl implements HomeRemoteRepository {
     required String songName,
     required String artist,
     required String hexCode,
-    required String token,
   }) async {
-    try {
-      final response = await _api.multipartPost(
-        url: '${ServerConstant.serverUrl}/song/upload',
-        fields: {'artist': artist, 'song_name': songName, 'hex_code': hexCode},
-        files: {'song': selectedAudio, 'thumbnail': selectedThumbnail},
-        headers: {'x-auth-token': token},
-      );
-
-      final body = await response.stream.bytesToString();
-
-      if (response.statusCode != 201) {
-        return Left(AppFailure(body));
-      }
-
-      return Right(body);
-    } on TimeoutException {
-      return Left(AppFailure(ApiErrorType.timeout.message));
-    } on FormatException {
-      return Left(AppFailure(ApiErrorType.badRequest.message));
-    } on Exception catch (e) {
-      return Left(AppFailure('Unexpected error: $e'));
+    final token = await _local.getTokenAsync();
+    
+    if (token == null || token.isEmpty) {
+      return const Left(AppFailure('User token is missing'));
     }
+
+    return _remote.uploadSong(
+      selectedAudio: selectedAudio,
+      selectedThumbnail: selectedThumbnail,
+      songName: songName,
+      artist: artist,
+      hexCode: hexCode,
+      token: token,
+    );
   }
 
   @override
-  ResultFuture<List<SongModel>> getAllSongs({required String token}) async {
-    try {
-      final response = await _api.request(
-        url: '${ServerConstant.serverUrl}/song/list',
-        method: 'GET',
-        headers: {'Content-Type': 'application/json', 'x-auth-token': token},
-      );
+  ResultFuture<List<SongModel>> getAllSongs() async {
+    final token = await _local.getTokenAsync();
 
-      final decoded = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        final list = decoded as List<dynamic>;
-
-        final songs =
-            list.map((e) => SongModel.fromJson(e as DataMap)).toList();
-
-        return Right(songs);
-      } else {
-        final message =
-            decoded is DataMap
-                ? decoded['message']?.toString() ??
-                    decoded['detail']?.toString() ??
-                    'Unexpected error occurred'
-                : 'Unexpected error occurred';
-
-        return Left(AppFailure(message));
-      }
-    } on TimeoutException {
-      return Left(AppFailure(ApiErrorType.timeout.message));
-    } on FormatException {
-      return Left(AppFailure(ApiErrorType.badRequest.message));
-    } on Exception catch (e) {
-      return Left(AppFailure('Unexpected error: $e'));
+    if (token == null || token.isEmpty) {
+      return const Left(AppFailure('User token is missing'));
     }
+
+    return _remote.getAllSongs(token: token);
   }
 }

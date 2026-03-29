@@ -12,10 +12,9 @@ abstract class HomeRemoteRepository {
     required String songName,
     required String artist,
     required String hexCode,
-    required String token,
   });
 
   /// Returns a [ResultFuture] that contains either a [List<SongModel>]
   ///  on success or an AppFailure on error.
-  ResultFuture<List<SongModel>> getAllSongs({required String token});
+  ResultFuture<List<SongModel>> getAllSongs();
 }
