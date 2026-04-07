@@ -66,12 +66,12 @@ class HomeRemoteDatasourceImpl implements HomeRemoteDatasource {
   }
 
   @override
-  ResultFuture<List<SongModel>> getAllSongs({required String token}) async {
+  ResultFuture<List<SongModel>> getAllSongs() async {
     try {
       final response = await _api.request(
-        url: '${ServerConstant.serverUrl}/song/list',
+        url: '${ServerConstant.serverUrl}/song/public',
         method: 'GET',
-        headers: {'Content-Type': 'application/json', 'x-auth-token': token},
+        headers: {'Content-Type': 'application/json'},
       );
 
       final decoded = jsonDecode(response.body);

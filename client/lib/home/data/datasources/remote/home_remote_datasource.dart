@@ -15,8 +15,6 @@ abstract class HomeRemoteDatasource {
     required String token,
   });
 
-  /// Retrieves all songs from the remote server.
-  ResultFuture<List<SongModel>> getAllSongs({
-    required String token,
-  });
+  /// Retrieves all songs from the remote server [public api].
+  ResultFuture<List<SongModel>> getAllSongs();
 }

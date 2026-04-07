@@ -41,7 +41,7 @@ class HomeRemoteRepositoryImpl implements HomeRemoteRepository {
     required String hexCode,
   }) async {
     final token = await _local.getTokenAsync();
-    
+
     if (token == null || token.isEmpty) {
       return const Left(AppFailure('User token is missing'));
     }
@@ -64,6 +64,6 @@ class HomeRemoteRepositoryImpl implements HomeRemoteRepository {
       return const Left(AppFailure('User token is missing'));
     }
 
-    return _remote.getAllSongs(token: token);
+    return _remote.getAllSongs();
   }
 }
