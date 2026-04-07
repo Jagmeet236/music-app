@@ -30,7 +30,7 @@ class RecentlyPlayedViewModel extends _$RecentlyPlayedViewModel {
       ..listen(currentUserNotifierProvider, (previous, next) {
         if (next == null) {
           state = const AsyncData([]);
-        } else if (previous == null && next != null) {
+        } else if (previous == null) {
           // If a new user logs in, reload the data
           ref.invalidateSelf();
         }

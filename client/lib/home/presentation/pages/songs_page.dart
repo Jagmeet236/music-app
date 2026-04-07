@@ -66,7 +66,11 @@ class _SongsPageState extends ConsumerState<SongsPage> {
                           onTap: () {
                             ref
                                 .read(currentSongNotifierProvider.notifier)
-                                .updateSong(song);
+                                .updateSong(
+                                  song,
+                                  playlist: songs,
+                                  index: index,
+                                );
                           },
                           child: SongCard(song: song),
                         );

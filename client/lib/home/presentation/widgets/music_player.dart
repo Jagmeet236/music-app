@@ -3,7 +3,7 @@ import 'package:client/core/providers/current_song_notifier/current_song_notifie
 import 'package:client/core/theme/app_palette.dart';
 import 'package:client/core/utils/color_util.dart';
 import 'package:client/core/utils/media_res.dart';
-import 'package:client/home/presentation/widgets/song_thumbnail.dart';
+import 'package:client/core/widgets/song_thumbnail.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -190,11 +190,14 @@ class _MusicPlayerState extends ConsumerState<MusicPlayer> {
                           color: Palette.whiteColor,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Image.asset(
-                          MediaRes.previousSong,
-                          color: Palette.whiteColor,
+                      GestureDetector(
+                        onTap: () async => songNotifier.playPrevious(),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Image.asset(
+                            MediaRes.previousSong,
+                            color: Palette.whiteColor,
+                          ),
                         ),
                       ),
                       IconButton(
@@ -207,11 +210,14 @@ class _MusicPlayerState extends ConsumerState<MusicPlayer> {
                           size: 80,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Image.asset(
-                          MediaRes.nextSong,
-                          color: Palette.whiteColor,
+                      GestureDetector(
+                        onTap: () async => songNotifier.playNext(),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Image.asset(
+                            MediaRes.nextSong,
+                            color: Palette.whiteColor,
+                          ),
                         ),
                       ),
                       Padding(

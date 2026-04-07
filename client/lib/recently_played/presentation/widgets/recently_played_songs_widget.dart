@@ -137,7 +137,22 @@ class _RecentlyPlayedSongsWidgetState
           padding: const EdgeInsets.only(right: 12),
           child: GestureDetector(
             onTap: () {
-              ref.read(currentSongNotifierProvider.notifier).updateSong(song);
+              // Capture the index at tap time before any reordering can occur.
+              final index = _localSongs.indexOf(song);
+
+              // Freeze the list into a snapshot RIGHT NOW at tap time.
+              // This is critical: we do NOT pass a live reference.
+              // The LRU logic promotes every played song to index 0, so a live
+              // reference would cause next/prev to always re-resolve the same
+              // positions after reordering — creating a ping-pong loop between
+              // only 2 songs. A frozen snapshot gives stable navigation order.
+              ref
+                  .read(currentSongNotifierProvider.notifier)
+                  .updateSong(
+                    song,
+                    playlist: List.from(_localSongs), // frozen snapshot
+                    index: index >= 0 ? index : 0,
+                  );
             },
             child: RecentlyPlayedSongCard(
               song: song,

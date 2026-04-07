@@ -1,7 +1,7 @@
 import 'package:client/core/extensions/app_context.dart';
 import 'package:client/core/theme/app_palette.dart';
+import 'package:client/core/widgets/song_thumbnail.dart';
 import 'package:client/home/data/models/song_model.dart';
-import 'package:client/home/presentation/widgets/song_thumbnail.dart';
 import 'package:flutter/material.dart';
 
 /// A widget that displays a single [song] in the recently played list.

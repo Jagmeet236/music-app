@@ -1,6 +1,6 @@
 import 'package:client/core/theme/app_palette.dart';
+import 'package:client/core/widgets/song_thumbnail.dart';
 import 'package:client/home/data/models/song_model.dart';
-import 'package:client/home/presentation/widgets/song_thumbnail.dart';
 import 'package:flutter/material.dart';
 
 /// A modern flat-style song card with a subtle white border
